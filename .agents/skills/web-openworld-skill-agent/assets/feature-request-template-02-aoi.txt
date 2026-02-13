@@ -1,0 +1,18 @@
+Feature Request: AOI Chunk Broadcast
+
+Goal:
+- Broadcast updates only to players in relevant nearby chunks.
+
+Allowed Modify Scope:
+- server/src/world
+- server/src/net
+- shared/protocol
+
+Constraints:
+- Single feature only, single PR.
+- Preserve existing protocol compatibility where possible.
+- Server computes AOI membership and broadcast targets.
+- No unrelated cleanup/refactor.
+
+Output:
+- Unified diff only.
