@@ -6,6 +6,7 @@ description: Force a plan-first execution style for implementation tasks: presen
 # Plan First Skill
 
 Plan first, then execute against the plan.
+This skill must comply with `engineering-standards-skill`.
 
 ## Absolute Rules
 

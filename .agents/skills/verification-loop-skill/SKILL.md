@@ -6,6 +6,7 @@ description: Enforce post-change verification for code work (bug fixes, features
 # Verification Loop Skill
 
 Verification is mandatory after code changes.
+This skill must comply with `engineering-standards-skill`.
 
 ## Absolute Rules
 

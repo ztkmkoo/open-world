@@ -6,6 +6,7 @@ description: 코드/설계/버그수정 등 어떤 작업이든 중단 가능성
 # Worklog Continuity Skill
 
 중단 가능성을 전제로, 작업 재개성을 최우선으로 유지한다.
+This skill must comply with `engineering-standards-skill`.
 
 ## Absolute Rules
 

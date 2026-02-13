@@ -6,6 +6,7 @@ description: Enforce local branch-first Git execution for code-change tasks in t
 # Git Workflow Skill
 
 Keep every change reviewable and safely isolated.
+This skill must comply with `engineering-standards-skill`.
 
 ## Absolute Rules
 
