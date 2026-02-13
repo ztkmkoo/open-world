@@ -1,0 +1,3 @@
+display_name: Web Game Stack Decider
+short_description: Choose an efficient web game stack with explicit tradeoffs and milestones.
+default_prompt: Decide the best language/framework stack for this open-world web game using a weighted matrix, then provide a concrete 30/60/90 day plan.

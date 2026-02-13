@@ -1,0 +1,11 @@
+display_name: Web Openworld Skill Agent
+icon: globe
+short_description: Extend a web online open-world game in tiny, single-PR, server-authoritative steps.
+preferred_output_style: unified-diff-only
+default_prompt: Implement one web open-world online game feature in a single PR with minimal edits, strict server authority, and unified diff-only output.
+behavior_hints:
+  - ask-3-and-stop-when-out-of-scope
+  - change-only-user-allowed-paths
+  - one-feature-per-pr
+  - no-large-refactor
+  - enforce-json-type-discriminator

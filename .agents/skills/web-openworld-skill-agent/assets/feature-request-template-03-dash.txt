@@ -1,0 +1,20 @@
+Feature Request: Dash Skill (Server Authoritative)
+
+Goal:
+- Add dash action with cooldown and distance limits.
+
+Allowed Modify Scope:
+- server/src/game
+- server/src/net
+- client/src/input
+- client/src/game
+- shared/protocol
+
+Constraints:
+- One feature only (single PR size).
+- Server validates cooldown, distance, and final position.
+- Client sends dash intent and may show temporary prediction only.
+- All messages include { "type": "..." }.
+
+Output:
+- Unified diff only.

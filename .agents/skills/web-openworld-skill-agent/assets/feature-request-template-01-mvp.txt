@@ -1,0 +1,20 @@
+Feature Request: MVP Connect/Move/Sync
+
+Goal:
+- Add connect, move intent, and authoritative position sync.
+
+Allowed Modify Scope:
+- server/src/net
+- server/src/game
+- client/src/net
+- client/src/game
+- shared/protocol
+
+Constraints:
+- Implement exactly one feature (single PR size).
+- Server authoritative for movement and final coordinates.
+- JSON messages must include { "type": "..." }.
+- No large refactor.
+
+Output:
+- Unified diff only.
