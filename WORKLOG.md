@@ -184,11 +184,12 @@
 ## Plan
 - [x] Review current bootstrap prompt vs actual repository state.
 - [x] Rewrite prompt to “baseline verification + gap fix” mode.
-- [ ] Commit and push docs update.
+- [x] Commit and push docs update.
 
 ## Done
 - [x] Updated prompt from greenfield bootstrap to current-state validation workflow.
 - [x] Added explicit `/health` handling guidance (verify if exists, add only if missing).
+- [x] Committed and pushed prompt refresh.
 
 ## Commands Run
 - `Get-Content docs/codex_prompt_00_bootstrap.md -Encoding utf8`: success.
@@ -197,12 +198,14 @@
 - `Get-Content src/routes/auth-routes.js -Encoding utf8`: success.
 - `Get-Content src/routes/character-routes.js -Encoding utf8`: success.
 - `Get-Content src/lib/db.js -Encoding utf8`: success.
+- `git commit -m "docs: refresh bootstrap prompt for current baseline"`: success (`75c45dc`).
+- `git push`: success.
 
 ## Notes/Decisions
 - Step 0 now reflects current reality: verify/patch baseline, do not re-bootstrap from scratch.
 
 ## Next Steps
-- 1) Commit and push this prompt update.
+- 1) Continue next runbook step (WS chat prompt) in separate implementation scope.
 
 ## Open Questions
 - 1) None.
