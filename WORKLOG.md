@@ -53,6 +53,65 @@
 - 2026-02-16 (local)
 
 ## Goal
+- Continue from prior MVP and implement `/command` minimal command loop on `/terminal`.
+- Support `도움|상태|문파` command responses with template v1 and server console logging.
+
+## Scope
+- src/server.js
+- WORKLOG.md
+
+## Plan
+- [x] Re-read latest WORKLOG and command prompt docs for exact acceptance criteria.
+- [x] Add command parser + response builder + `/command` API route.
+- [x] Wire terminal input UI to POST `/command` and append structured response logs.
+- [x] Run verification commands from package scripts and syntax checks.
+- [x] Commit locally on current feature branch.
+
+## Done
+- [x] Confirmed current branch: `feature/login-sect-terminal-mvp`.
+- [x] Confirmed working tree is clean before edits.
+- [x] Loaded docs/codex_prompt_command_min_v1.md and seed schema context.
+- [x] Implemented command alias parser and response template v1 builder.
+- [x] Added `POST /command` with session+sect guard and structured JSON response.
+- [x] Wired `/terminal` input Enter/send to fetch `/command` and append logs.
+- [x] Verified `status|sect|help` command responses over HTTP.
+- [x] Staged scoped files and created local commit.
+
+## Commands Run
+- `Get-Content .agents/skills/worklog-continuity-skill/SKILL.md`: success.
+- `Get-Content WORKLOG.md`: success.
+- `Get-ChildItem docs -Recurse -File`: success.
+- `Get-Content docs/codex_prompt_command_min_v1.md -Encoding utf8`: success.
+- `git branch --show-current`: success (`feature/login-sect-terminal-mvp`).
+- `git status --short --branch`: success (clean).
+- `Get-Content src/server.js -Encoding utf8`: success.
+- `Get-Content src/lib/db.js -Encoding utf8`: success.
+- `Get-Content scripts/init-db.js -Encoding utf8`: success.
+- `Get-Content docs/seed_v1.sql -Encoding utf8`: success.
+- `npm.cmd run db:init`: success.
+- `node --check src/server.js`: success.
+- `node --check src/lib/db.js`: success.
+- `node --check scripts/init-db.js`: success.
+- `/command` smoke test via temporary server + Node fetch client: success (`status|sect|help` returned expected template).
+- `git add src/server.js WORKLOG.md`: success.
+- `git commit -m "feat: add terminal command API and UI loop"`: success.
+
+## Notes/Decisions
+- Keep implementation in single file (`src/server.js`) to stay minimal and reviewable.
+- Use alias mapping for Korean-first commands with English fallback.
+- Reuse existing DB/session flow; no schema change required for this increment.
+
+## Next Steps
+- 1) Manually verify `/terminal` in browser for Korean input rendering in local shell/codepage.
+- 2) Continue next scope (`/command` 확장) on follow-up increment.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-16 (local)
+
+## Goal
 - Implement login -> nickname -> faction -> sect -> terminal MVP flow from docs prompt.
 - Build minimal Node.js(Express)+SQLite app with cookie session and seed data.
 
