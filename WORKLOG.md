@@ -62,22 +62,27 @@
 
 ## Plan
 - [x] Confirm local branch status and ahead commits.
-- [ ] Push branch to origin.
-- [ ] Create PR (or verify/update existing PR) and share URL.
+- [x] Push branch to origin.
+- [x] Create PR (or verify/update existing PR) and share URL.
 
 ## Done
 - [x] User confirmed push/PR-first flow; route-splitting scope deferred to next task.
+- [x] Pushed `feature/login-sect-terminal-mvp` to origin.
+- [x] Confirmed PR creation URL from GitHub push output.
+- [x] Attempted CLI PR creation; unavailable due to missing `gh` command.
 
 ## Commands Run
 - `git status --short --branch`: success (`ahead 2`).
+- `git add WORKLOG.md; git commit -m "chore: update worklog for push and pr handoff"`: success.
+- `git push origin feature/login-sect-terminal-mvp`: success (new remote branch pushed, PR URL emitted).
+- `gh pr create ...`: failed (`gh` not installed in environment).
 
 ## Notes/Decisions
 - Proceeding with PR completion now, route split (`1번`) will be handled in a separate follow-up scope.
 
 ## Next Steps
-- 1) Push branch.
-- 2) Create or verify PR URL.
-- 3) Share PR status.
+- 1) Open PR using emitted URL and complete merge.
+- 2) After merge, start separate scope to split auth/character routes from `server.js`.
 
 ## Open Questions
 - 1) None.
