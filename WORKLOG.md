@@ -53,6 +53,37 @@
 - 2026-02-16 (local)
 
 ## Goal
+- Push `refactor/split-auth-character-routes` and hand off PR URL.
+
+## Scope
+- Branch: `refactor/split-auth-character-routes`
+- WORKLOG.md
+
+## Plan
+- [x] Confirm clean branch state after route split commits.
+- [ ] Push branch to origin.
+- [ ] Share PR creation URL.
+
+## Done
+- [x] Route split commits ready on local branch.
+
+## Commands Run
+- `git status --short --branch`: success (clean).
+
+## Notes/Decisions
+- Proceed with push-first; PR URL will be provided from GitHub remote output.
+
+## Next Steps
+- 1) Push current branch.
+- 2) Open/share PR URL.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-16 (local)
+
+## Goal
 - Start new scope after PR merge: split auth/character routes out of `src/server.js`.
 
 ## Scope
