@@ -64,12 +64,14 @@
 - [x] Merge `origin/main` into feature branch.
 - [x] Resolve conflicts in affected files.
 - [x] Run syntax verification after resolution.
-- [ ] Complete merge commit and push.
+- [x] Complete merge commit and push.
 
 ## Done
 - [x] Resolved conflicts in `src/server.js` and `WORKLOG.md`.
 - [x] Kept feature-side command/module split implementation.
 - [x] Re-ran syntax checks on merged code.
+- [x] Created merge commit and pushed branch.
+- [x] Verified local/remote sync state after fetch (`0 0`).
 
 ## Commands Run
 - `git merge origin/main`: conflicted (`WORKLOG.md`, `src/server.js`).
@@ -78,14 +80,18 @@
 - `node --check src/server.js`: success.
 - `node --check src/lib/command-service.js`: success.
 - `node --check src/views/terminal-view.js`: success.
+- `git commit -m "merge: resolve conflicts with origin/main"`: success.
+- `git push origin feature/login-sect-terminal-mvp`: success.
+- `git fetch origin feature/login-sect-terminal-mvp`: success.
+- `git rev-list --left-right --count origin/feature/login-sect-terminal-mvp...feature/login-sect-terminal-mvp`: success (`0 0`).
 
 ## Notes/Decisions
 - Chose feature branch side for conflicted files to preserve newer `/command` and module split changes.
 - Merge strategy remains branch-preserving per user instruction (`1번`).
 
 ## Next Steps
-- 1) Commit merge.
-- 2) Push branch and confirm PR conflict cleared.
+- 1) Check GitHub PR page and confirm conflict badge is cleared.
+- 2) After PR merge, start separate scope for auth/character route split.
 
 ## Open Questions
 - 1) None.
