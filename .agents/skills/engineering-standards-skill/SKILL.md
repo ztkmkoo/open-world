@@ -1,6 +1,6 @@
 ---
 name: engineering-standards-skill
-description: Enforces global engineering standards: no guessing in plans (ask questions), all code/docs/comments in English, senior-level efficient architecture. Trigger this for any coding/design/doc task; do not use for casual chat.
+description: "Enforces global engineering standards: no guessing in plans (ask questions), all code/docs/comments in English, senior-level efficient architecture. Trigger this for any coding/design/doc task; do not use for casual chat."
 ---
 
 # Engineering Standards Skill

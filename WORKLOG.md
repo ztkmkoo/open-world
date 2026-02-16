@@ -53,6 +53,45 @@
 - 2026-02-16 (local)
 
 ## Goal
+- Fix two skill loading errors shown at runtime before proceeding to next scope.
+
+## Scope
+- .agents/skills/engineering-standards-skill/SKILL.md
+- .agents/skills/plan-first-skill/SKILL.md
+- WORKLOG.md
+
+## Plan
+- [x] Reproduce error output to identify exact failing skills/files.
+- [x] Patch invalid YAML frontmatter in the 2 skill files.
+- [x] Re-run Codex command to confirm no skill-load errors.
+- [ ] Commit fixes locally.
+
+## Done
+- [x] Reproduced errors via `codex.cmd exec`.
+- [x] Identified failing skills: `engineering-standards-skill`, `plan-first-skill`.
+- [x] Quoted YAML `description` values in both skills.
+- [x] Verified no skill-load errors on rerun.
+
+## Commands Run
+- `codex.cmd exec "테스트"`: reproduced 2 errors:
+  - `engineering-standards-skill/SKILL.md`: invalid YAML line 2 col 51
+  - `plan-first-skill/SKILL.md`: invalid YAML line 2 col 73
+- `codex.cmd exec "테스트"` (after patch): success, no skill loading errors.
+
+## Notes/Decisions
+- Root cause is unquoted `description` values containing `:` in YAML frontmatter.
+- Apply minimal fix by quoting only affected `description` lines.
+
+## Next Steps
+- 1) Commit local fix.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-16 (local)
+
+## Goal
 - Push `refactor/split-auth-character-routes` and hand off PR URL.
 
 ## Scope
