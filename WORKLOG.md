@@ -53,6 +53,47 @@
 - 2026-02-16 (local)
 
 ## Goal
+- Finalize merge-conflict resolution with `origin/main` and restore PR to mergeable state.
+
+## Scope
+- src/server.js
+- WORKLOG.md
+- Merge commit on `feature/login-sect-terminal-mvp`
+
+## Plan
+- [x] Merge `origin/main` into feature branch.
+- [x] Resolve conflicts in affected files.
+- [x] Run syntax verification after resolution.
+- [ ] Complete merge commit and push.
+
+## Done
+- [x] Resolved conflicts in `src/server.js` and `WORKLOG.md`.
+- [x] Kept feature-side command/module split implementation.
+- [x] Re-ran syntax checks on merged code.
+
+## Commands Run
+- `git merge origin/main`: conflicted (`WORKLOG.md`, `src/server.js`).
+- `git checkout --ours src/server.js WORKLOG.md`: success.
+- `git add src/server.js WORKLOG.md`: success.
+- `node --check src/server.js`: success.
+- `node --check src/lib/command-service.js`: success.
+- `node --check src/views/terminal-view.js`: success.
+
+## Notes/Decisions
+- Chose feature branch side for conflicted files to preserve newer `/command` and module split changes.
+- Merge strategy remains branch-preserving per user instruction (`1번`).
+
+## Next Steps
+- 1) Commit merge.
+- 2) Push branch and confirm PR conflict cleared.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-16 (local)
+
+## Goal
 - Resolve PR conflict against latest `origin/main` while keeping current feature branch strategy.
 
 ## Scope
