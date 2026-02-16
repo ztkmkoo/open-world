@@ -2,6 +2,14 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const { initDatabase } = require("./lib/db");
+const {
+  firstToken,
+  parseCommandInput,
+  buildCommandResponse,
+  getTerminalDetail,
+  getSectDepartmentNames,
+} = require("./lib/command-service");
+const { renderTerminalContent } = require("./views/terminal-view");
 const { SURNAME_ALLOWLIST, GIVEN_NAME_REGEX } = require("./constants");
 
 const app = express();
@@ -384,36 +392,44 @@ app.get("/terminal", (req, res) => {
     return;
   }
 
-  const detail = db.prepare(`
-    SELECT u.nickname_unique, u.gender, s.name AS sect_name, f.name AS faction_name
-    FROM users u
-    LEFT JOIN sects s ON s.sect_id = u.sect_id
-    LEFT JOIN factions f ON f.faction_id = s.faction_id
-    WHERE u.user_id = ?
-  `).get(user.user_id);
+  const detail = getTerminalDetail(db, user.user_id);
+  if (!detail || !detail.sect_id) {
+    res.redirect("/choose-faction");
+    return;
+  }
 
-  res.send(htmlPage("터미널", `
-    <div class="card">
-      <h1>무림 터미널</h1>
-      <p>${detail.nickname_unique} (${detail.gender}) | ${detail.faction_name} / ${detail.sect_name}</p>
-      <div class="terminal">
-        <div class="panel">
-          <h3>명령 콘솔</h3>
-          <div class="log" id="log">환영합니다. (MVP stub)</div>
-          <div class="row"><input style="flex:1;" placeholder="명령어 입력" /><button type="button">전송</button></div>
-        </div>
-        <div class="panel">
-          <h3>채팅</h3>
-          <div class="chat-tabs">
-            <div class="chat-tab">전체</div>
-            <div class="chat-tab">문파</div>
-            <div class="chat-tab">귓</div>
-          </div>
-          <div class="log">채팅 서버는 MVP에서 stub입니다.</div>
-        </div>
-      </div>
-    </div>
-  `));
+  res.send(htmlPage("터미널", renderTerminalContent(detail)));
+});
+
+app.post("/command", (req, res) => {
+  const session = requireRegistered(req, res);
+  if (!session) return;
+
+  const user = loadUser(session.user_id);
+  if (!user || !user.sect_id) {
+    res.status(403).json({ ok: false, message: "sect selection required" });
+    return;
+  }
+
+  const detail = getTerminalDetail(db, user.user_id);
+
+  if (!detail || !detail.sect_id) {
+    res.status(404).json({ ok: false, message: "character/sect not found" });
+    return;
+  }
+
+  const deptNames = getSectDepartmentNames(db, detail.sect_id, 3);
+
+  const rawInput = String(req.body.input || "");
+  const parsed = parseCommandInput(rawInput);
+  const response = buildCommandResponse(parsed, detail, deptNames);
+
+  console.log(
+    `[COMMAND] user=${detail.nickname_unique} sect=${detail.sect_name} input="${firstToken(rawInput)}" canonical="${parsed.canonical || "unknown"}"`
+  );
+  console.log(`[COMMAND] ${response.header} | actions=${response.actions.join(",")}`);
+
+  res.json(response);
 });
 
 app.listen(PORT, () => {
