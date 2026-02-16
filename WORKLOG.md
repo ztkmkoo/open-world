@@ -214,6 +214,60 @@
 - 1) None.
 
 ## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Start Runbook Step 3 on a fresh branch: implement minimum WebSocket chat (global/sect/whisper) for `/terminal`.
+
+## Scope
+- src/server.js
+- src/views/terminal-view.js
+- src/ws/* (new)
+- package.json (only if dependency is needed)
+- WORKLOG.md
+
+## Plan
+- [x] Create fresh task branch from latest `origin/main`.
+- [x] Define plan-first implementation steps for WS chat minimum.
+- [x] Add WS server bootstrap and session-authenticated connection handling.
+- [x] Implement channel routing rules (global/sect/whisper).
+- [x] Connect terminal chat UI to WS + command shortcuts.
+- [ ] Run verification loop and commit.
+
+## Done
+- [x] Created branch `feature/ws-chat-minimum` from `origin/main`.
+- [x] Confirmed Runbook next step is Step 3 (`docs/codex_prompt_02_ws_chat.md`).
+- [x] Added `ws` dependency and WS chat server module.
+- [x] Wired Express HTTP server to `/ws/chat` WebSocket endpoint.
+- [x] Updated terminal chat panel from stub to live WS chat UI.
+- [x] Verified global/sect/whisper routing behavior via runtime smoke test.
+
+## Commands Run
+- `git checkout -B main origin/main`: success.
+- `git checkout -b feature/ws-chat-minimum`: success.
+- `Get-Content docs/runbook_v1.md -Encoding utf8`: success.
+- `Get-Content docs/codex_prompt_02_ws_chat.md -Encoding utf8`: success.
+- `npm.cmd install ws@8.18.3`: success.
+- `node --check src/server.js`: success.
+- `node --check src/ws/chat-server.js`: success.
+- `node --check src/views/terminal-view.js`: success.
+- `npm.cmd run db:init`: success.
+- Runtime WS smoke test with 3 seeded sessions: success.
+  - `global:A,B,C=true,true,true`
+  - `sect:A,B,C=true,true,false`
+  - `whisper:A,B,C=true,false,true`
+
+## Notes/Decisions
+- This scope is limited to Step 3 only (WS chat minimum) to keep PR review-sized.
+
+## Next Steps
+- 1) Commit WS chat minimum scope.
+- 2) Push branch and open PR.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
 - 2026-02-16 (local)
 
 ## Goal
