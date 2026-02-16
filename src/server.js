@@ -12,6 +12,7 @@ const {
 const { renderTerminalContent } = require("./views/terminal-view");
 const { registerAuthRoutes } = require("./routes/auth-routes");
 const { registerCharacterRoutes } = require("./routes/character-routes");
+const { initChatWebSocket } = require("./ws/chat-server");
 const { SURNAME_ALLOWLIST, GIVEN_NAME_REGEX } = require("./constants");
 
 const app = express();
@@ -45,7 +46,8 @@ function htmlPage(title, content) {
     .panel { border: 1px solid #c9c9c9; border-radius: 8px; background: #fff; padding: 12px; }
     .log { height: 360px; overflow: auto; background: #111; color: #d4ffd4; padding: 10px; border-radius: 6px; font-family: Consolas, monospace; }
     .chat-tabs { display: flex; gap: 6px; margin-bottom: 8px; }
-    .chat-tab { background: #eee; color: #333; border-radius: 6px; padding: 6px 10px; font-size: 13px; }
+    .chat-tab { background: #eee; color: #333; border: 1px solid #d0d0d0; border-radius: 6px; padding: 6px 10px; font-size: 13px; cursor: pointer; }
+    .chat-tab.active { background: #1f3b2d; color: #fff; border-color: #1f3b2d; }
   </style>
 </head>
 <body>${content}</body>
@@ -199,6 +201,8 @@ app.post("/command", (req, res) => {
   res.json(response);
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
 });
+
+initChatWebSocket({ server, db });

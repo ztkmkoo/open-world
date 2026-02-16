@@ -214,6 +214,95 @@
 - 1) None.
 
 ## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Start Runbook Step 3 on a fresh branch: implement minimum WebSocket chat (global/sect/whisper) for `/terminal`.
+
+## Scope
+- src/server.js
+- src/views/terminal-view.js
+- src/ws/* (new)
+- package.json (only if dependency is needed)
+- WORKLOG.md
+
+## Plan
+- [x] Create fresh task branch from latest `origin/main`.
+- [x] Define plan-first implementation steps for WS chat minimum.
+- [x] Add WS server bootstrap and session-authenticated connection handling.
+- [x] Implement channel routing rules (global/sect/whisper).
+- [x] Connect terminal chat UI to WS + command shortcuts.
+- [ ] Run verification loop and commit.
+
+## Done
+- [x] Created branch `feature/ws-chat-minimum` from `origin/main`.
+- [x] Confirmed Runbook next step is Step 3 (`docs/codex_prompt_02_ws_chat.md`).
+- [x] Added `ws` dependency and WS chat server module.
+- [x] Wired Express HTTP server to `/ws/chat` WebSocket endpoint.
+- [x] Updated terminal chat panel from stub to live WS chat UI.
+- [x] Verified global/sect/whisper routing behavior via runtime smoke test.
+
+## Commands Run
+- `git checkout -B main origin/main`: success.
+- `git checkout -b feature/ws-chat-minimum`: success.
+- `Get-Content docs/runbook_v1.md -Encoding utf8`: success.
+- `Get-Content docs/codex_prompt_02_ws_chat.md -Encoding utf8`: success.
+- `npm.cmd install ws@8.18.3`: success.
+- `node --check src/server.js`: success.
+- `node --check src/ws/chat-server.js`: success.
+- `node --check src/views/terminal-view.js`: success.
+- `npm.cmd run db:init`: success.
+- Runtime WS smoke test with 3 seeded sessions: success.
+  - `global:A,B,C=true,true,true`
+  - `sect:A,B,C=true,true,false`
+  - `whisper:A,B,C=true,false,true`
+
+## Notes/Decisions
+- This scope is limited to Step 3 only (WS chat minimum) to keep PR review-sized.
+
+## Next Steps
+- 1) Commit WS chat minimum scope.
+- 2) Push branch and open PR.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Push Step 3 (`feature/ws-chat-minimum`) and prepare PR handoff.
+
+## Scope
+- Branch: `feature/ws-chat-minimum`
+- WORKLOG.md
+
+## Plan
+- [x] Confirm branch state after Step 3 commit.
+- [x] Push branch to origin.
+- [x] Share PR link and suggested title/body.
+
+## Done
+- [x] Step 3 WS chat minimum commit is complete and local tree is clean.
+- [x] Pushed `feature/ws-chat-minimum` to origin.
+- [x] Captured PR creation URL from push output.
+
+## Commands Run
+- `git status --short --branch`: success (clean on `feature/ws-chat-minimum`).
+- `git log --oneline --decorate -n 3`: success (`48957b7` at HEAD).
+- `git commit -m "chore: record push handoff for ws chat step"`: success (`c158a01`).
+- `git push -u origin feature/ws-chat-minimum`: success.
+
+## Notes/Decisions
+- Proceeding with push and PR handoff without additional code changes.
+
+## Next Steps
+- 1) Open PR with provided title/body.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
 - 2026-02-16 (local)
 
 ## Goal
