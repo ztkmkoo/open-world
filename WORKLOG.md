@@ -61,21 +61,24 @@
 
 ## Plan
 - [x] Confirm clean branch state after route split commits.
-- [ ] Push branch to origin.
-- [ ] Share PR creation URL.
+- [x] Push branch to origin.
+- [x] Share PR creation URL.
 
 ## Done
 - [x] Route split commits ready on local branch.
+- [x] Pushed `refactor/split-auth-character-routes` to origin.
+- [x] Confirmed PR creation URL from push output.
 
 ## Commands Run
 - `git status --short --branch`: success (clean).
+- `git add WORKLOG.md; git commit -m "chore: record push and pr handoff for route split"`: success.
+- `git push -u origin refactor/split-auth-character-routes`: success.
 
 ## Notes/Decisions
 - Proceed with push-first; PR URL will be provided from GitHub remote output.
 
 ## Next Steps
-- 1) Push current branch.
-- 2) Open/share PR URL.
+- 1) Open PR using generated URL and request review.
 
 ## Open Questions
 - 1) None.
