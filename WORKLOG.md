@@ -53,6 +53,39 @@
 - 2026-02-16 (local)
 
 ## Goal
+- Push current branch changes and complete PR handoff for review/merge.
+
+## Scope
+- WORKLOG.md
+- Remote branch: `feature/login-sect-terminal-mvp`
+- PR target: `main`
+
+## Plan
+- [x] Confirm local branch status and ahead commits.
+- [ ] Push branch to origin.
+- [ ] Create PR (or verify/update existing PR) and share URL.
+
+## Done
+- [x] User confirmed push/PR-first flow; route-splitting scope deferred to next task.
+
+## Commands Run
+- `git status --short --branch`: success (`ahead 2`).
+
+## Notes/Decisions
+- Proceeding with PR completion now, route split (`1번`) will be handled in a separate follow-up scope.
+
+## Next Steps
+- 1) Push branch.
+- 2) Create or verify PR URL.
+- 3) Share PR status.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-16 (local)
+
+## Goal
 - Continue both pending items: browser manual verification guidance + `/command` extension.
 - Reduce `server.js` size by extracting terminal command/view logic into modules.
 
