@@ -66,12 +66,13 @@
 ## Plan
 - [x] Inspect newly added docs and current branch status.
 - [x] Rename branch to docs-scoped name.
-- [ ] Commit/push current docs + worklog changes.
-- [ ] Stop here and start implementation in a separate next scope.
+- [x] Commit/push current docs + worklog changes.
+- [x] Stop here and start implementation in a separate next scope.
 
 ## Done
 - [x] Confirmed newly added runbook/prompt docs exist and are untracked.
 - [x] Renamed branch `feature/next-task` -> `docs/runbook-prompts-update`.
+- [x] Committed docs changes and pushed branch to origin.
 
 ## Commands Run
 - `git branch --show-current`: success (`feature/next-task`).
@@ -79,13 +80,15 @@
 - `Get-ChildItem docs -File | Sort-Object LastWriteTime -Descending`: success.
 - `rg --line-number --glob "docs/**" "runbook|prompt|phase|step|todo|checklist"`: success.
 - `git branch -m docs/runbook-prompts-update`: success.
+- `git commit -m "docs: update runbook and phased codex prompts"`: success (`3e6adae`).
+- `git push -u origin docs/runbook-prompts-update`: success.
 
 ## Notes/Decisions
 - This scope is docs-only (runbook + prompts update), not implementation.
 
 ## Next Steps
-- 1) Commit/push runbook docs.
-- 2) Start implementation as a separate follow-up scope/branch.
+- 1) Open PR for docs-only update branch.
+- 2) Start implementation in separate follow-up scope/branch.
 
 ## Open Questions
 - 1) None.
