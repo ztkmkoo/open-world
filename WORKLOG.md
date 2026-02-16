@@ -143,3 +143,33 @@
 
 ## Open Questions
 - 1) None.
+
+## Date/Time
+- 2026-02-16 (local)
+
+## Goal
+- Publish feature branch and hand off PR for merge.
+
+## Scope
+- WORKLOG.md
+
+## Plan
+- [x] Push feature branch to origin.
+- [x] Share PR link.
+
+## Done
+- [x] Pushed `feature/login-sect-terminal-mvp` to origin.
+- [x] Confirmed PR creation URL.
+
+## Commands Run
+- `git push -u origin feature/login-sect-terminal-mvp`: success.
+
+## Notes/Decisions
+- PR URL prepared for immediate review/merge.
+
+## Next Steps
+- 1) Open PR and merge.
+- 2) After merge, start next scope (`/command` minimal implementation) on a new branch.
+
+## Open Questions
+- 1) None.
