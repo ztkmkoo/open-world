@@ -2,6 +2,14 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const { initDatabase } = require("./lib/db");
+const {
+  firstToken,
+  parseCommandInput,
+  buildCommandResponse,
+  getTerminalDetail,
+  getSectDepartmentNames,
+} = require("./lib/command-service");
+const { renderTerminalContent } = require("./views/terminal-view");
 const { SURNAME_ALLOWLIST, GIVEN_NAME_REGEX } = require("./constants");
 
 const app = express();
@@ -86,95 +94,6 @@ function requireRegistered(req, res) {
 
 function loadUser(userId) {
   return db.prepare(`SELECT user_id, surname, given_name, nickname_unique, gender, sect_id FROM users WHERE user_id = ?`).get(userId);
-}
-
-const COMMAND_ALIAS = {
-  도움: "help",
-  help: "help",
-  h: "help",
-  상태: "status",
-  status: "status",
-  stat: "status",
-  문파: "sect",
-  sect: "sect",
-};
-
-function firstToken(input) {
-  return String(input || "").trim().split(/\s+/)[0] || "";
-}
-
-function normalizeCommand(input) {
-  const token = firstToken(input).toLowerCase();
-  return COMMAND_ALIAS[token] || "";
-}
-
-function formatKstNow() {
-  const dtf = new Intl.DateTimeFormat("sv-SE", {
-    timeZone: "Asia/Seoul",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
-  return `${dtf.format(new Date()).replace(" ", "T")} KST`;
-}
-
-function buildCommandResponse(command, detail, deptNames) {
-  if (command === "status") {
-    return {
-      ok: true,
-      header: "【상태】 캐릭터 현황",
-      lines: [
-        `이름: ${detail.nickname_unique}`,
-        `성별: ${detail.gender}`,
-        `소속: ${detail.faction_name} / ${detail.sect_name}`,
-        `시간: ${formatKstNow()}`,
-      ],
-      actions: ["문파", "도움", "상태"],
-    };
-  }
-
-  if (command === "sect") {
-    const lines = [
-      `문파: ${detail.sect_name}`,
-      `세력: ${detail.faction_name}`,
-      `위상: ${detail.prestige}`,
-      `정원: ${detail.roster_count}/${detail.capacity_total}`,
-    ];
-    if (deptNames.length > 0) {
-      lines.push(`조직: ${deptNames.join(", ")}`);
-    }
-    return {
-      ok: true,
-      header: "【문파】 소속 정보",
-      lines,
-      actions: ["상태", "도움", "문파"],
-    };
-  }
-
-  if (command === "help") {
-    return {
-      ok: true,
-      header: "【안내】 지원 명령",
-      lines: [
-        "도움(help): 지원 명령 목록 표시",
-        "상태(status): 캐릭터와 소속 상태 표시",
-        "문파(sect): 문파 상세 정보 표시",
-        "예시: 상태",
-      ],
-      actions: ["상태", "문파", "도움"],
-    };
-  }
-
-  return {
-    ok: false,
-    header: "【오류】 알 수 없는 명령",
-    lines: ["지원 명령: 도움, 상태, 문파"],
-    actions: ["도움", "상태", "문파"],
-  };
 }
 
 const assignSectTx = db.transaction((userId, sectId) => {
@@ -473,96 +392,13 @@ app.get("/terminal", (req, res) => {
     return;
   }
 
-  const detail = db.prepare(`
-    SELECT
-      u.nickname_unique,
-      u.gender,
-      s.sect_id,
-      s.name AS sect_name,
-      s.prestige,
-      s.roster_count,
-      s.capacity_total,
-      f.name AS faction_name
-    FROM users u
-    LEFT JOIN sects s ON s.sect_id = u.sect_id
-    LEFT JOIN factions f ON f.faction_id = s.faction_id
-    WHERE u.user_id = ?
-  `).get(user.user_id);
+  const detail = getTerminalDetail(db, user.user_id);
+  if (!detail || !detail.sect_id) {
+    res.redirect("/choose-faction");
+    return;
+  }
 
-  res.send(htmlPage("터미널", `
-    <div class="card">
-      <h1>무림 터미널</h1>
-      <p>${detail.nickname_unique} (${detail.gender}) | ${detail.faction_name} / ${detail.sect_name}</p>
-      <div class="terminal">
-        <div class="panel">
-          <h3>명령 콘솔</h3>
-          <div class="log" id="log">환영합니다. "도움"을 입력해보세요.</div>
-          <div class="row">
-            <input id="cmd-input" style="flex:1;" placeholder="명령어 입력" />
-            <button id="cmd-send" type="button">전송</button>
-          </div>
-        </div>
-        <div class="panel">
-          <h3>채팅</h3>
-          <div class="chat-tabs">
-            <div class="chat-tab">전체</div>
-            <div class="chat-tab">문파</div>
-            <div class="chat-tab">귓</div>
-          </div>
-          <div class="log">채팅 서버는 MVP에서 stub입니다.</div>
-        </div>
-      </div>
-      <script>
-        const logEl = document.getElementById("log");
-        const inputEl = document.getElementById("cmd-input");
-        const sendBtn = document.getElementById("cmd-send");
-
-        function appendLog(text) {
-          logEl.textContent += "\\n" + text;
-          logEl.scrollTop = logEl.scrollHeight;
-        }
-
-        function renderResponse(data) {
-          appendLog("");
-          appendLog(data.header);
-          for (const line of data.lines || []) {
-            appendLog("- " + line);
-          }
-          appendLog("추천: " + (data.actions || []).join(" | "));
-        }
-
-        async function sendCommand() {
-          const input = inputEl.value.trim();
-          if (!input) return;
-          appendLog("> " + input);
-          inputEl.value = "";
-          try {
-            const res = await fetch("/command", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ input }),
-            });
-            const payload = await res.json();
-            if (!res.ok) {
-              appendLog("요청 실패: HTTP " + res.status);
-              return;
-            }
-            renderResponse(payload);
-          } catch (_err) {
-            appendLog("요청 실패: 네트워크 오류");
-          }
-        }
-
-        sendBtn.addEventListener("click", sendCommand);
-        inputEl.addEventListener("keydown", (event) => {
-          if (event.key === "Enter") {
-            event.preventDefault();
-            sendCommand();
-          }
-        });
-      </script>
-    </div>
-  `));
+  res.send(htmlPage("터미널", renderTerminalContent(detail)));
 });
 
 app.post("/command", (req, res) => {
@@ -575,41 +411,21 @@ app.post("/command", (req, res) => {
     return;
   }
 
-  const detail = db.prepare(`
-    SELECT
-      u.nickname_unique,
-      u.gender,
-      s.sect_id,
-      s.name AS sect_name,
-      s.prestige,
-      s.roster_count,
-      s.capacity_total,
-      f.name AS faction_name
-    FROM users u
-    LEFT JOIN sects s ON s.sect_id = u.sect_id
-    LEFT JOIN factions f ON f.faction_id = s.faction_id
-    WHERE u.user_id = ?
-  `).get(user.user_id);
+  const detail = getTerminalDetail(db, user.user_id);
 
   if (!detail || !detail.sect_id) {
     res.status(404).json({ ok: false, message: "character/sect not found" });
     return;
   }
 
-  const deptNames = db.prepare(`
-    SELECT display_name
-    FROM sect_departments
-    WHERE sect_id = ?
-    ORDER BY elder_slot_index
-    LIMIT 3
-  `).all(detail.sect_id).map((row) => row.display_name);
+  const deptNames = getSectDepartmentNames(db, detail.sect_id, 3);
 
   const rawInput = String(req.body.input || "");
-  const command = normalizeCommand(rawInput);
-  const response = buildCommandResponse(command, detail, deptNames);
+  const parsed = parseCommandInput(rawInput);
+  const response = buildCommandResponse(parsed, detail, deptNames);
 
   console.log(
-    `[COMMAND] user=${detail.nickname_unique} sect=${detail.sect_name} input="${firstToken(rawInput)}" canonical="${command || "unknown"}"`
+    `[COMMAND] user=${detail.nickname_unique} sect=${detail.sect_name} input="${firstToken(rawInput)}" canonical="${parsed.canonical || "unknown"}"`
   );
   console.log(`[COMMAND] ${response.header} | actions=${response.actions.join(",")}`);
 

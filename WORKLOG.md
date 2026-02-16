@@ -53,6 +53,60 @@
 - 2026-02-16 (local)
 
 ## Goal
+- Continue both pending items: browser manual verification guidance + `/command` extension.
+- Reduce `server.js` size by extracting terminal command/view logic into modules.
+
+## Scope
+- src/server.js
+- src/lib/command-service.js (new)
+- src/views/terminal-view.js (new)
+- docs/terminal_manual_checklist.md (new)
+- WORKLOG.md
+
+## Plan
+- [x] Confirm current branch/state and review existing terminal/command code paths.
+- [x] Extract command parser/response builder and terminal detail queries into `src/lib/command-service.js`.
+- [x] Extract terminal panel HTML+script into `src/views/terminal-view.js`.
+- [x] Extend `/command` parsing UX (slash prefix + alias + command-specific help).
+- [x] Run verification loop and update manual browser checklist.
+- [x] Commit locally.
+
+## Done
+- [x] Reviewed current implementation and identified duplicated terminal detail query.
+- [x] Split terminal detail query + command parsing/response logic to `src/lib/command-service.js`.
+- [x] Split terminal UI HTML/script to `src/views/terminal-view.js`.
+- [x] Added command extension: `/상태`, `도움 문파`, `help sect`, unknown-command guidance.
+- [x] Added manual browser verification document `docs/terminal_manual_checklist.md`.
+- [x] Verified route behavior and response format using runtime smoke tests.
+
+## Commands Run
+- `Get-Content WORKLOG.md -Encoding utf8 | Select-Object -First 120`: success.
+- `Get-ChildItem src -Recurse -File`: success.
+- `Get-Content src/server.js -Encoding utf8`: success.
+- `node --check src/server.js`: success.
+- `node --check src/lib/command-service.js`: success.
+- `node --check src/views/terminal-view.js`: success.
+- `npm.cmd run db:init`: success.
+- Runtime smoke test (`POST /command`, `GET /terminal`) with temporary server + seeded session: success.
+- Runtime Korean-input verification using unicode escaped payload (`상태`, `/상태`, `도움 문파`): success.
+- `git add src/server.js src/lib/command-service.js src/views/terminal-view.js docs/terminal_manual_checklist.md WORKLOG.md`: success.
+- `git commit -m "refactor: split terminal command/view modules"`: success.
+
+## Notes/Decisions
+- Split by responsibility first, not by framework: command domain + terminal view.
+- Keep route surfaces unchanged (`GET /terminal`, `POST /command`) for low-risk refactor.
+- Manual browser verification is documented because this environment cannot launch a GUI browser.
+
+## Next Steps
+- 1) If needed, split auth/character routes from `server.js` in the next increment.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-16 (local)
+
+## Goal
 - Continue from prior MVP and implement `/command` minimal command loop on `/terminal`.
 - Support `도움|상태|문파` command responses with template v1 and server console logging.
 
