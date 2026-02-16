@@ -12,30 +12,39 @@
 
 ## Plan
 - [x] Inspect repository status and identify blockers (detached HEAD + rebase/conflicts).
-- [ ] Create/update WORKLOG before file edits and commit steps.
-- [ ] Resolve conflict markers in skill files with minimal safe choice.
-- [ ] Create new branch and commit current content.
-- [ ] Push branch to origin and share PR/merge next step.
+- [x] Create/update WORKLOG before file edits and commit steps.
+- [x] Resolve conflict markers in skill files with minimal safe choice.
+- [x] Create new branch and commit current content.
+- [x] Push branch to origin and share PR/merge next step.
 
 ## Done
 - [x] Verified current repository status and remote.
 - [x] Quit in-progress rebase metadata safely.
+- [x] Created branch `chore/preserve-skills-docs-baseline`.
+- [x] Committed docs and worklog baseline.
+- [x] Pushed branch to `origin` and confirmed PR URL.
 
 ## Commands Run
 - `git status --short --branch`: detached HEAD with unmerged skill files and untracked docs.
 - `git branch --all --no-color`: showed '(no branch, rebasing main)' and main/origin branches.
 - `git remote -v`: origin configured to git@github.com:ztkmkoo/open-world.git.
 - `git rebase --quit`: success.
+- `git checkout --ours -- <4 skill files>`: resolved index conflicts using current side.
+- `git checkout -b chore/preserve-skills-docs-baseline`: success.
+- `git add <skills/docs/worklog>`: staged files.
+- `git commit -m "chore: preserve current skills and docs baseline"`: success (d8d2354).
+- `git push -u origin chore/preserve-skills-docs-baseline`: success.
 
 ## Notes/Decisions
-- Keep current user-intended content, only remove merge markers.
-- Create a dedicated branch before any further feature implementation.
+- Preserved docs + worklog exactly as current baseline for merge.
+- Conflict markers were already absent in working files; only index resolution was required.
+- Next implementation starts after user merges this branch.
 
 ## Next Steps
-- 1) Resolve conflict markers in 4 skill files.
-- 2) Create new branch for preserving current state.
-- 3) Commit skills/docs/worklog and push to origin.
-- 4) User merges branch, then resume MVP implementation from prompt.
+- 1) User opens PR and merges `chore/preserve-skills-docs-baseline` into `main`.
+- 2) Sync local `main` and create a feature branch for login->sect-select MVP implementation.
+- 3) Implement routes/pages/session/SQLite flow from `docs/codex_prompt_login_to_sect_select.md`.
+- 4) Run verification loop and report pass/fail.
 
 ## Open Questions
 - 1) None.
