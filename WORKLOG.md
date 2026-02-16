@@ -50,6 +50,170 @@
 - 1) None.
 
 ## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Rename current branch to match docs-only scope and commit/push newly added runbook/prompt documents.
+
+## Scope
+- docs/runbook_v1.md
+- docs/codex_prompt_00_bootstrap.md
+- docs/codex_prompt_02_ws_chat.md
+- docs/codex_prompt_03_tick_training.md
+- docs/codex_prompt_04_terminal_client_tick.md
+- WORKLOG.md
+
+## Plan
+- [x] Inspect newly added docs and current branch status.
+- [x] Rename branch to docs-scoped name.
+- [x] Commit/push current docs + worklog changes.
+- [x] Stop here and start implementation in a separate next scope.
+
+## Done
+- [x] Confirmed newly added runbook/prompt docs exist and are untracked.
+- [x] Renamed branch `feature/next-task` -> `docs/runbook-prompts-update`.
+- [x] Committed docs changes and pushed branch to origin.
+
+## Commands Run
+- `git branch --show-current`: success (`feature/next-task`).
+- `git status --short --branch`: success.
+- `Get-ChildItem docs -File | Sort-Object LastWriteTime -Descending`: success.
+- `rg --line-number --glob "docs/**" "runbook|prompt|phase|step|todo|checklist"`: success.
+- `git branch -m docs/runbook-prompts-update`: success.
+- `git commit -m "docs: update runbook and phased codex prompts"`: success (`3e6adae`).
+- `git push -u origin docs/runbook-prompts-update`: success.
+
+## Notes/Decisions
+- This scope is docs-only (runbook + prompts update), not implementation.
+
+## Next Steps
+- 1) Open PR for docs-only update branch.
+- 2) Start implementation in separate follow-up scope/branch.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Sync local `main` with `origin/main` and create a fresh branch for the next task.
+
+## Scope
+- Git branch operations only
+- WORKLOG.md
+
+## Plan
+- [x] Check current branch/status.
+- [x] Switch to `main`, fetch, and fast-forward pull from `origin`.
+- [x] Create new task branch from updated `main`.
+
+## Done
+- [x] Confirmed current branch: `fix/skill-yaml-frontmatter`.
+- [x] Updated local `main` to latest `origin/main` (`b9a283c`).
+- [x] Created and switched to `feature/next-task`.
+
+## Commands Run
+- `git branch --show-current`: success (`fix/skill-yaml-frontmatter`).
+- `git status --short --branch`: success.
+- `git stash push -m "temp-worklog-before-branch-switch" WORKLOG.md`: success.
+- `git checkout main`: success.
+- `git fetch origin`: success.
+- `git pull --ff-only origin main`: success (fast-forward to `b9a283c`).
+- `git checkout -b feature/next-task`: success.
+- `git stash pop`: success.
+
+## Notes/Decisions
+- New branch name chosen for immediate follow-up work: `feature/next-task`.
+
+## Next Steps
+- 1) Start next implementation task on `feature/next-task`.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Refresh `docs/runbook_v1.md` to match actual current implementation status.
+
+## Scope
+- docs/runbook_v1.md
+- WORKLOG.md
+
+## Plan
+- [x] Compare runbook steps against current codebase status.
+- [x] Update runbook with completed/pending step states and realistic next execution order.
+- [x] Commit and push docs-only update.
+
+## Done
+- [x] Verified current state: login->sect->terminal and `/command` minimum are implemented on `main`.
+- [x] Updated `docs/runbook_v1.md` with completion status per step.
+- [x] Committed and pushed docs update branch.
+
+## Commands Run
+- `Get-Content docs/runbook_v1.md -Encoding utf8`: success.
+- `Get-Content docs/codex_prompt_login_to_sect_select.md -Encoding utf8`: success.
+- `Get-Content docs/codex_prompt_command_min_v1.md -Encoding utf8`: success.
+- `Get-Content docs/wuxia_mvp_spec_v1.md -Encoding utf8`: success.
+- `Get-Content src/server.js -Encoding utf8`: success.
+- `Get-Content src/routes/auth-routes.js -Encoding utf8`: success.
+- `Get-Content src/routes/character-routes.js -Encoding utf8`: success.
+- `Get-Content src/lib/db.js -Encoding utf8`: success.
+- `git commit -m "docs: update runbook status to current implementation"`: success (`a8cc153`).
+- `git push`: success.
+
+## Notes/Decisions
+- Mark Step 1/2 as completed and keep Step 3/4/5 as pending.
+- Keep runbook focused on execution order and verification checkpoints.
+
+## Next Steps
+- 1) Continue implementation from runbook Step 3 (WebSocket chat).
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Refresh `docs/codex_prompt_00_bootstrap.md` to match current project baseline (already-implemented MVP).
+
+## Scope
+- docs/codex_prompt_00_bootstrap.md
+- WORKLOG.md
+
+## Plan
+- [x] Review current bootstrap prompt vs actual repository state.
+- [x] Rewrite prompt to “baseline verification + gap fix” mode.
+- [x] Commit and push docs update.
+
+## Done
+- [x] Updated prompt from greenfield bootstrap to current-state validation workflow.
+- [x] Added explicit `/health` handling guidance (verify if exists, add only if missing).
+- [x] Committed and pushed prompt refresh.
+
+## Commands Run
+- `Get-Content docs/codex_prompt_00_bootstrap.md -Encoding utf8`: success.
+- `Get-Content docs/runbook_v1.md -Encoding utf8`: success.
+- `Get-Content src/server.js -Encoding utf8`: success.
+- `Get-Content src/routes/auth-routes.js -Encoding utf8`: success.
+- `Get-Content src/routes/character-routes.js -Encoding utf8`: success.
+- `Get-Content src/lib/db.js -Encoding utf8`: success.
+- `git commit -m "docs: refresh bootstrap prompt for current baseline"`: success (`75c45dc`).
+- `git push`: success.
+
+## Notes/Decisions
+- Step 0 now reflects current reality: verify/patch baseline, do not re-bootstrap from scratch.
+
+## Next Steps
+- 1) Continue next runbook step (WS chat prompt) in separate implementation scope.
+
+## Open Questions
+- 1) None.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
 - 2026-02-16 (local)
 
 ## Goal
