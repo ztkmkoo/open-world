@@ -1,6 +1,6 @@
 ---
 name: plan-first-skill
-description: Force a plan-first execution style for implementation tasks: present a small, reviewable step plan (goal, scope, verification, size) before edits, then execute against that plan and update it when reality changes. Trigger for coding tasks with file changes. Do not trigger for casual Q&A, pure brainstorming, or trivial no-edit responses.
+description: "Force a plan-first execution style for implementation tasks: present a small, reviewable step plan (goal, scope, verification, size) before edits, then execute against that plan and update it when reality changes. Trigger for coding tasks with file changes. Do not trigger for casual Q&A, pure brainstorming, or trivial no-edit responses."
 ---
 
 # Plan First Skill
