@@ -279,22 +279,25 @@
 
 ## Plan
 - [x] Confirm branch state after Step 3 commit.
-- [ ] Push branch to origin.
-- [ ] Share PR link and suggested title/body.
+- [x] Push branch to origin.
+- [x] Share PR link and suggested title/body.
 
 ## Done
 - [x] Step 3 WS chat minimum commit is complete and local tree is clean.
+- [x] Pushed `feature/ws-chat-minimum` to origin.
+- [x] Captured PR creation URL from push output.
 
 ## Commands Run
 - `git status --short --branch`: success (clean on `feature/ws-chat-minimum`).
 - `git log --oneline --decorate -n 3`: success (`48957b7` at HEAD).
+- `git commit -m "chore: record push handoff for ws chat step"`: success (`c158a01`).
+- `git push -u origin feature/ws-chat-minimum`: success.
 
 ## Notes/Decisions
 - Proceeding with push and PR handoff without additional code changes.
 
 ## Next Steps
-- 1) Push branch.
-- 2) Provide PR handoff content.
+- 1) Open PR with provided title/body.
 
 ## Open Questions
 - 1) None.
