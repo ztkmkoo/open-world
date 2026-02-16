@@ -50,6 +50,86 @@
 - 1) None.
 
 ## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Rename current branch to match docs-only scope and commit/push newly added runbook/prompt documents.
+
+## Scope
+- docs/runbook_v1.md
+- docs/codex_prompt_00_bootstrap.md
+- docs/codex_prompt_02_ws_chat.md
+- docs/codex_prompt_03_tick_training.md
+- docs/codex_prompt_04_terminal_client_tick.md
+- WORKLOG.md
+
+## Plan
+- [x] Inspect newly added docs and current branch status.
+- [x] Rename branch to docs-scoped name.
+- [ ] Commit/push current docs + worklog changes.
+- [ ] Stop here and start implementation in a separate next scope.
+
+## Done
+- [x] Confirmed newly added runbook/prompt docs exist and are untracked.
+- [x] Renamed branch `feature/next-task` -> `docs/runbook-prompts-update`.
+
+## Commands Run
+- `git branch --show-current`: success (`feature/next-task`).
+- `git status --short --branch`: success.
+- `Get-ChildItem docs -File | Sort-Object LastWriteTime -Descending`: success.
+- `rg --line-number --glob "docs/**" "runbook|prompt|phase|step|todo|checklist"`: success.
+- `git branch -m docs/runbook-prompts-update`: success.
+
+## Notes/Decisions
+- This scope is docs-only (runbook + prompts update), not implementation.
+
+## Next Steps
+- 1) Commit/push runbook docs.
+- 2) Start implementation as a separate follow-up scope/branch.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Sync local `main` with `origin/main` and create a fresh branch for the next task.
+
+## Scope
+- Git branch operations only
+- WORKLOG.md
+
+## Plan
+- [x] Check current branch/status.
+- [x] Switch to `main`, fetch, and fast-forward pull from `origin`.
+- [x] Create new task branch from updated `main`.
+
+## Done
+- [x] Confirmed current branch: `fix/skill-yaml-frontmatter`.
+- [x] Updated local `main` to latest `origin/main` (`b9a283c`).
+- [x] Created and switched to `feature/next-task`.
+
+## Commands Run
+- `git branch --show-current`: success (`fix/skill-yaml-frontmatter`).
+- `git status --short --branch`: success.
+- `git stash push -m "temp-worklog-before-branch-switch" WORKLOG.md`: success.
+- `git checkout main`: success.
+- `git fetch origin`: success.
+- `git pull --ff-only origin main`: success (fast-forward to `b9a283c`).
+- `git checkout -b feature/next-task`: success.
+- `git stash pop`: success.
+
+## Notes/Decisions
+- New branch name chosen for immediate follow-up work: `feature/next-task`.
+
+## Next Steps
+- 1) Start next implementation task on `feature/next-task`.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
 - 2026-02-16 (local)
 
 ## Goal
