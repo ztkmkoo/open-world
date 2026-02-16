@@ -53,6 +53,46 @@
 - 2026-02-16 (local)
 
 ## Goal
+- Resolve PR conflict against latest `origin/main` while keeping current feature branch strategy.
+
+## Scope
+- Merge target: `origin/main` -> `feature/login-sect-terminal-mvp`
+- Conflict files from merge (to be determined)
+- WORKLOG.md
+
+## Plan
+- [x] Fetch latest remote and compare divergence.
+- [ ] Merge `origin/main` into current feature branch.
+- [ ] Resolve conflicts and verify runtime checks.
+- [ ] Commit and push updated branch for conflict-free PR.
+
+## Done
+- [x] Confirmed current branch and clean status.
+- [x] Fetched latest `origin/main` (updated to `0176325`).
+- [x] Confirmed divergence (`feature` ahead of `origin/main` by 6 commits).
+
+## Commands Run
+- `git branch --show-current`: success (`feature/login-sect-terminal-mvp`).
+- `git status --short --branch`: success (clean).
+- `git fetch origin`: success.
+- `git rev-list --left-right --count origin/main...feature/login-sect-terminal-mvp`: success (`0 6`).
+
+## Notes/Decisions
+- Keep existing branch/PR as requested (`1번`).
+- Resolve conflict by merging latest `origin/main` into feature branch.
+
+## Next Steps
+- 1) Merge `origin/main` into feature branch.
+- 2) Resolve conflicts and run checks.
+- 3) Push updated branch.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-16 (local)
+
+## Goal
 - Push current branch changes and complete PR handoff for review/merge.
 
 ## Scope
