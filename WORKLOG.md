@@ -268,6 +268,38 @@
 - 1) None.
 
 ## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Push Step 3 (`feature/ws-chat-minimum`) and prepare PR handoff.
+
+## Scope
+- Branch: `feature/ws-chat-minimum`
+- WORKLOG.md
+
+## Plan
+- [x] Confirm branch state after Step 3 commit.
+- [ ] Push branch to origin.
+- [ ] Share PR link and suggested title/body.
+
+## Done
+- [x] Step 3 WS chat minimum commit is complete and local tree is clean.
+
+## Commands Run
+- `git status --short --branch`: success (clean on `feature/ws-chat-minimum`).
+- `git log --oneline --decorate -n 3`: success (`48957b7` at HEAD).
+
+## Notes/Decisions
+- Proceeding with push and PR handoff without additional code changes.
+
+## Next Steps
+- 1) Push branch.
+- 2) Provide PR handoff content.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
 - 2026-02-16 (local)
 
 ## Goal
