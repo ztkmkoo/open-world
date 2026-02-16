@@ -144,11 +144,13 @@
 
 ## Plan
 - [x] Compare runbook steps against current codebase status.
-- [ ] Update runbook with completed/pending step states and realistic next execution order.
-- [ ] Commit and push docs-only update.
+- [x] Update runbook with completed/pending step states and realistic next execution order.
+- [x] Commit and push docs-only update.
 
 ## Done
 - [x] Verified current state: login->sect->terminal and `/command` minimum are implemented on `main`.
+- [x] Updated `docs/runbook_v1.md` with completion status per step.
+- [x] Committed and pushed docs update branch.
 
 ## Commands Run
 - `Get-Content docs/runbook_v1.md -Encoding utf8`: success.
@@ -159,14 +161,15 @@
 - `Get-Content src/routes/auth-routes.js -Encoding utf8`: success.
 - `Get-Content src/routes/character-routes.js -Encoding utf8`: success.
 - `Get-Content src/lib/db.js -Encoding utf8`: success.
+- `git commit -m "docs: update runbook status to current implementation"`: success (`a8cc153`).
+- `git push`: success.
 
 ## Notes/Decisions
 - Mark Step 1/2 as completed and keep Step 3/4/5 as pending.
 - Keep runbook focused on execution order and verification checkpoints.
 
 ## Next Steps
-- 1) Patch runbook status blocks/checklists.
-- 2) Commit and push updates.
+- 1) Continue implementation from runbook Step 3 (WebSocket chat).
 
 ## Open Questions
 - 1) None.
