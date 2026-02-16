@@ -53,6 +53,61 @@
 - 2026-02-16 (local)
 
 ## Goal
+- Start new scope after PR merge: split auth/character routes out of `src/server.js`.
+
+## Scope
+- src/server.js
+- src/routes/auth-routes.js (new)
+- src/routes/character-routes.js (new)
+- WORKLOG.md
+
+## Plan
+- [x] Create fresh task branch from latest `origin/main`.
+- [x] Inspect current route layout and define split boundary.
+- [x] Extract auth routes (`/login`, `/auth/mock`, `/nickname`) into module.
+- [x] Extract character routes (`/choose-*`, `/api/sect/select`, faction/sect APIs) into module.
+- [x] Keep terminal/command routes in server and wire registrations.
+- [ ] Run verification loop and commit.
+
+## Done
+- [x] Created branch `refactor/split-auth-character-routes` from updated `origin/main`.
+- [x] Confirmed existing command/terminal modules are already split and reusable.
+- [x] Added `src/routes/auth-routes.js` and moved auth/nickname route handlers.
+- [x] Added `src/routes/character-routes.js` and moved faction/sect route handlers.
+- [x] Rewired `src/server.js` to register route modules while preserving endpoint behavior.
+- [x] Completed syntax and runtime smoke verification after split.
+
+## Commands Run
+- `git branch --show-current`: success.
+- `git status --short --branch`: success.
+- `git fetch origin`: success (`origin/main` updated to `330518f`).
+- `git checkout -B main origin/main`: success.
+- `git checkout -b refactor/split-auth-character-routes`: success.
+- `Get-Content src/server.js -Encoding utf8`: success.
+- `Get-Content src/lib/command-service.js -Encoding utf8`: success.
+- `Get-Content src/views/terminal-view.js -Encoding utf8`: success.
+- `node --check src/server.js`: success.
+- `node --check src/routes/auth-routes.js`: success.
+- `node --check src/routes/character-routes.js`: success.
+- `node --check src/lib/command-service.js`: success.
+- `npm.cmd run db:init`: success.
+- Runtime smoke (`GET /api/factions`, `GET /terminal`, `POST /command`) with seeded session: success.
+
+## Notes/Decisions
+- Route split will preserve current endpoint surface and behavior.
+- This scope excludes additional business-logic refactors beyond routing boundaries.
+
+## Next Steps
+- 1) Commit route-split changes on current branch.
+- 2) Push branch and open PR for review.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-16 (local)
+
+## Goal
 - Finalize merge-conflict resolution with `origin/main` and restore PR to mergeable state.
 
 ## Scope
