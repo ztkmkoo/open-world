@@ -133,6 +133,45 @@
 - 1) None.
 
 ## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Refresh `docs/runbook_v1.md` to match actual current implementation status.
+
+## Scope
+- docs/runbook_v1.md
+- WORKLOG.md
+
+## Plan
+- [x] Compare runbook steps against current codebase status.
+- [ ] Update runbook with completed/pending step states and realistic next execution order.
+- [ ] Commit and push docs-only update.
+
+## Done
+- [x] Verified current state: login->sect->terminal and `/command` minimum are implemented on `main`.
+
+## Commands Run
+- `Get-Content docs/runbook_v1.md -Encoding utf8`: success.
+- `Get-Content docs/codex_prompt_login_to_sect_select.md -Encoding utf8`: success.
+- `Get-Content docs/codex_prompt_command_min_v1.md -Encoding utf8`: success.
+- `Get-Content docs/wuxia_mvp_spec_v1.md -Encoding utf8`: success.
+- `Get-Content src/server.js -Encoding utf8`: success.
+- `Get-Content src/routes/auth-routes.js -Encoding utf8`: success.
+- `Get-Content src/routes/character-routes.js -Encoding utf8`: success.
+- `Get-Content src/lib/db.js -Encoding utf8`: success.
+
+## Notes/Decisions
+- Mark Step 1/2 as completed and keep Step 3/4/5 as pending.
+- Keep runbook focused on execution order and verification checkpoints.
+
+## Next Steps
+- 1) Patch runbook status blocks/checklists.
+- 2) Commit and push updates.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
 - 2026-02-16 (local)
 
 ## Goal
