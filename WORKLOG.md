@@ -67,7 +67,7 @@
 - [x] Extract auth routes (`/login`, `/auth/mock`, `/nickname`) into module.
 - [x] Extract character routes (`/choose-*`, `/api/sect/select`, faction/sect APIs) into module.
 - [x] Keep terminal/command routes in server and wire registrations.
-- [ ] Run verification loop and commit.
+- [x] Run verification loop and commit.
 
 ## Done
 - [x] Created branch `refactor/split-auth-character-routes` from updated `origin/main`.
@@ -92,14 +92,15 @@
 - `node --check src/lib/command-service.js`: success.
 - `npm.cmd run db:init`: success.
 - Runtime smoke (`GET /api/factions`, `GET /terminal`, `POST /command`) with seeded session: success.
+- `git add src/server.js src/routes/auth-routes.js src/routes/character-routes.js WORKLOG.md`: success.
+- `git commit -m "refactor: split auth and character routes"`: success.
 
 ## Notes/Decisions
 - Route split will preserve current endpoint surface and behavior.
 - This scope excludes additional business-logic refactors beyond routing boundaries.
 
 ## Next Steps
-- 1) Commit route-split changes on current branch.
-- 2) Push branch and open PR for review.
+- 1) Push branch and open PR for review.
 
 ## Open Questions
 - 1) None.
