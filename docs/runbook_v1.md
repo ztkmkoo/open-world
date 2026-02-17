@@ -24,8 +24,8 @@
 
 ## 1) 실행 순서(권장)
 현재 상태 요약:
-- 완료: Step 1, Step 2, Step 3
-- 미완료(다음 스코프): Step 4, Step 5
+- 완료: Step 1, Step 2, Step 3, Step 4, Step 5
+- 미완료(다음 스코프): Step 0(`/health` endpoint 보강)
 
 ### Step 0 — 프로젝트 부트스트랩
 1. Codex 실행: `codex_prompt_00_bootstrap.md`
@@ -67,7 +67,7 @@
    - 로그인 직후 `catchup` 1회 실행(서버 기록)
    - 이후 10분마다 tick 호출 시 누적(테스트용으로 tick interval을 10초로 바꿔 검증 가능)
    - `상태` 명령에 “현재 수련 대상”과 “last_tick_at” 정보가 표시(개발용)
-3. 상태: 미완료
+3. 상태: 완료 (2026-02-17 Step 4 머지 반영)
 
 ### Step 5 — 터미널 클라이언트 자동 tick + 로그인 직후 catchup 연결
 1. Codex 실행: `codex_prompt_04_terminal_client_tick.md`
@@ -75,7 +75,7 @@
    - `/terminal` 진입 시 자동 catchup 1회 호출
    - 이후 자동 tick 타이머 동작
    - tick이 10분 이내로 중복 호출되면 서버가 `last_tick_at=now`로 업데이트(페널티)되며, 클라 재시도는 request_id로 중복 방지(권장)
-3. 상태: 미완료
+3. 상태: 완료 (2026-02-17 Step 5 머지 반영)
 
 ---
 
@@ -84,8 +84,8 @@
 - [x] sect 정원 144 강제(만석 시 서버 차단)
 - [x] `/command` 최소 3개 명령 동작 + 템플릿 준수
 - [x] 채팅(전체/문파/귓) 동작
-- [ ] tick/catchup 동작 + 부정행위 처리(last_tick_at=now)
-- [ ] 자동 tick이 서버 부하 없이 동작(개발 환경에서 interval 축소로 테스트)
+- [x] tick/catchup 동작 + 부정행위 처리(last_tick_at=now)
+- [x] 자동 tick이 서버 부하 없이 동작(개발 환경에서 interval 축소로 테스트)
 
 ---
 
