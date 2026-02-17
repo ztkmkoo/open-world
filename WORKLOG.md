@@ -980,3 +980,95 @@
 
 ## Open Questions
 - 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Start from updated `main` and implement Runbook Step 5 (terminal auto catchup + auto tick).
+
+## Scope
+- Git branch operations
+- src/views/terminal-view.js
+- WORKLOG.md
+
+## Plan
+- [x] Check current branch/status.
+- [ ] Record start entry in WORKLOG.
+- [ ] Sync local `main` with `origin/main`.
+- [ ] Create Step 5 task branch from updated `main`.
+- [ ] Implement Step 5 client logic and run verification.
+- [ ] Commit scoped changes locally.
+
+## Done
+- [x] Confirmed current branch `feature/resume-2026-02-17` and clean status.
+
+## Commands Run
+- `git branch --show-current`: success (`feature/resume-2026-02-17`).
+- `git status --short --branch`: success.
+
+## Notes/Decisions
+- Planned branch name: `feature/step5-terminal-auto-tick`.
+
+## Next Steps
+- 1) Sync `main` and branch off for Step 5.
+- 2) Implement terminal-side automatic catchup/tick flow.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Implement Runbook Step 5: terminal auto catchup on load and periodic auto tick with request-id safety.
+
+## Scope
+- src/views/terminal-view.js
+- WORKLOG.md
+
+## Plan
+- [x] Sync from latest `main` and branch for Step 5.
+- [x] Add `/terminal` client catchup-once + 10-minute tick interval.
+- [x] Ensure tick request carries `client_request_id` and avoids immediate retry loops.
+- [x] Run verification commands and runtime smoke checks.
+- [ ] Commit Step 5 changes locally.
+
+## Done
+- [x] Synced local `main` to `origin/main` (`2a6b0ae`) and created `feature/step5-terminal-auto-tick`.
+- [x] Implemented `runCatchupOnce`, `runTickOnce`, and `startTickLoop` in terminal client script.
+- [x] Added request-id generation with `crypto.randomUUID()` fallback.
+- [x] Added system log lines for catchup/tick success/failure states.
+- [x] Verified terminal HTML wiring includes catchup/tick/request_id/interval path.
+
+## Commands Run
+- `git stash push -m "temp-worklog-before-step5-branch" WORKLOG.md`: success.
+- `git checkout main`: success.
+- `git fetch origin`: success (`origin/main` -> `2a6b0ae`).
+- `git pull --ff-only origin main`: success.
+- `git checkout -b feature/step5-terminal-auto-tick`: success.
+- `git stash pop`: success.
+- `Get-Content docs/codex_prompt_04_terminal_client_tick.md -Encoding utf8`: success.
+- `Get-Content src/views/terminal-view.js -Encoding utf8`: success.
+- `rg --line-number "tick|catchup|client_request_id" ...`: success.
+- `npm.cmd run db:init`: success.
+- `node --check src/views/terminal-view.js`: success.
+- `node --check src/server.js`: success.
+- `node --check src/lib/training-service.js`: success.
+- `node -` (Step 5 runtime wiring smoke): success.
+  - `terminal_status=200`
+  - `contains_catchup=true`
+  - `contains_tick=true`
+  - `contains_request_id=true`
+  - `contains_interval=true`
+
+## Notes/Decisions
+- Step 5 implemented only on terminal client to keep scope aligned with prompt.
+- Network failure handling intentionally avoids immediate retry; next tick waits for the next interval.
+
+## Next Steps
+- 1) Commit Step 5 changes.
+- 2) Push branch and open PR when requested.
+
+## Open Questions
+- 1) None.
