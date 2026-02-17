@@ -19,13 +19,14 @@
 - `codex_prompt_02_ws_chat.md` : WebSocket 채팅(전체/문파/귓) 최소 구현
 - `codex_prompt_03_tick_training.md` : tick/catchup(클라 주도) + 수련 상태(백그라운드) 최소 구현
 - `codex_prompt_04_terminal_client_tick.md` : 터미널 클라이언트에서 자동 tick 호출 + 로그인 직후 catchup 호출
+- `training_spec_v2.md` : 심법/무공 수련 명령, 문파 기본 심법, 저장 모델 확장 스펙
 
 ---
 
 ## 1) 실행 순서(권장)
 현재 상태 요약:
 - 완료: Step 0, Step 1, Step 2, Step 3, Step 4, Step 5
-- 미완료(다음 스코프): 없음
+- 미완료(다음 스코프): Step 6 (Training Domain Expansion)
 
 ### Step 0 — 프로젝트 부트스트랩
 1. Codex 실행: `codex_prompt_00_bootstrap.md`
@@ -76,6 +77,14 @@
    - 이후 자동 tick 타이머 동작
    - tick이 10분 이내로 중복 호출되면 서버가 `last_tick_at=now`로 업데이트(페널티)되며, 클라 재시도는 request_id로 중복 방지(권장)
 3. 상태: 완료 (2026-02-17 Step 5 머지 반영)
+
+### Step 6 — Training Domain Expansion (Inner Art Defaults + Command Storage)
+1. 문서 기준: `training_spec_v2.md`
+2. 확인:
+   - 문파별 기본 심법이 DB seed로 고정된다.
+   - `수련 심법 <이름>` / `수련 무공 <이름>` 명령으로 수련 대상을 변경할 수 있다.
+   - 서버가 현재 수련 대상(심법/무공)을 검증 가능한 ID로 저장한다.
+3. 상태: 미완료 (spec drafted, implementation pending)
 
 ---
 
