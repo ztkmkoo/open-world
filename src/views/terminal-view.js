@@ -34,6 +34,7 @@ function renderTerminalContent(detail) {
         const chatInputEl = document.getElementById("chat-input");
         const chatSendBtn = document.getElementById("chat-send");
         const chatTabs = Array.from(document.querySelectorAll("[data-chat-tab]"));
+        const TICK_INTERVAL_MS = 10 * 60 * 1000;
 
         let currentChatTab = "all";
         const chatBuffer = {
@@ -41,6 +42,7 @@ function renderTerminalContent(detail) {
           sect: [],
           whisper: [],
         };
+        let tickTimerId = null;
 
         function appendLog(text) {
           logEl.textContent += "\\n" + text;
@@ -75,6 +77,70 @@ function renderTerminalContent(detail) {
           } catch (_err) {
             appendLog("요청 실패: 네트워크 오류");
           }
+        }
+
+        function newClientRequestId() {
+          if (window.crypto && typeof window.crypto.randomUUID === "function") {
+            return window.crypto.randomUUID();
+          }
+          return "tick-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+        }
+
+        async function runCatchupOnce() {
+          try {
+            const res = await fetch("/tick/catchup", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({}),
+            });
+            const payload = await res.json();
+            if (!res.ok || !payload.ok) {
+              appendLog("[SYSTEM] catchup failed: HTTP " + res.status);
+              return;
+            }
+            appendLog("[SYSTEM] catchup applied ticks: " + (payload.tick_count || 0));
+          } catch (_error) {
+            appendLog("[SYSTEM] catchup skipped: network error");
+          }
+        }
+
+        async function runTickOnce() {
+          try {
+            const res = await fetch("/tick", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({
+                client_request_id: newClientRequestId(),
+              }),
+            });
+            const payload = await res.json();
+            if (!res.ok || !payload.ok) {
+              appendLog("[SYSTEM] tick failed: HTTP " + res.status);
+              return;
+            }
+            const applied = Number(payload.applied_ticks || 0);
+            if (payload.duplicate) {
+              appendLog("[SYSTEM] tick ignored (duplicate request_id)");
+              return;
+            }
+            if (payload.penalized) {
+              appendLog("[SYSTEM] tick penalized (too early)");
+              return;
+            }
+            appendLog("[SYSTEM] tick applied: " + applied);
+          } catch (_error) {
+            appendLog("[SYSTEM] tick skipped: network error");
+          }
+        }
+
+        async function startTickLoop() {
+          if (tickTimerId !== null) return;
+          await runCatchupOnce();
+          tickTimerId = window.setInterval(() => {
+            runTickOnce();
+          }, TICK_INTERVAL_MS);
         }
 
         sendBtn.addEventListener("click", sendCommand);
@@ -201,6 +267,8 @@ function renderTerminalContent(detail) {
             renderChat();
           });
         }
+
+        startTickLoop();
       </script>
     </div>
   `;
