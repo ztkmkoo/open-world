@@ -5,6 +5,7 @@ function registerCharacterRoutes(app, deps) {
     requireRegistered,
     loadUser,
     assignSectTx,
+    assignSquadTx,
     onSectAssigned,
     redirectWithAlert,
   } = deps;
@@ -15,7 +16,7 @@ function registerCharacterRoutes(app, deps) {
 
     const user = loadUser(session.user_id);
     if (user && user.sect_id) {
-      res.redirect("/terminal");
+      res.redirect(user.squad_id ? "/terminal" : "/choose-squad");
       return;
     }
 
@@ -38,7 +39,7 @@ function registerCharacterRoutes(app, deps) {
 
     const user = loadUser(session.user_id);
     if (user && user.sect_id) {
-      res.redirect("/terminal");
+      res.redirect(user.squad_id ? "/terminal" : "/choose-squad");
       return;
     }
 
@@ -100,7 +101,8 @@ function registerCharacterRoutes(app, deps) {
         return;
       }
       if (result.code === "ALREADY_ASSIGNED") {
-        res.redirect("/terminal");
+        const user = loadUser(session.user_id);
+        res.redirect(user && user.squad_id ? "/terminal" : "/choose-squad");
         return;
       }
       res.status(400).send(redirectWithAlert("선택 처리에 실패했습니다.", "/choose-faction"));
@@ -109,6 +111,83 @@ function registerCharacterRoutes(app, deps) {
 
     if (typeof onSectAssigned === "function") {
       onSectAssigned(session.user_id, sectId);
+    }
+
+    res.redirect("/choose-squad");
+  });
+
+  app.get("/choose-squad", (req, res) => {
+    const session = requireRegistered(req, res);
+    if (!session) return;
+
+    const user = loadUser(session.user_id);
+    if (!user || !user.sect_id) {
+      res.redirect("/choose-faction");
+      return;
+    }
+    if (user.squad_id) {
+      res.redirect("/terminal");
+      return;
+    }
+
+    const rows = db.prepare(`
+      SELECT
+        ss.squad_id,
+        ss.display_name AS squad_name,
+        ss.roster_count,
+        ss.capacity_total,
+        sh.display_name AS hall_name,
+        sd.display_name AS dept_name
+      FROM sect_squads ss
+      JOIN sect_halls sh ON sh.hall_id = ss.hall_id
+      JOIN sect_departments sd ON sd.dept_id = sh.dept_id
+      WHERE ss.sect_id = ?
+      ORDER BY ss.squad_slot_index
+    `).all(user.sect_id);
+
+    const list = rows.map((row) => {
+      const full = row.roster_count >= row.capacity_total;
+      return `
+        <form method="post" action="/api/squad/select" style="margin-bottom:10px;">
+          <input type="hidden" name="squad_id" value="${row.squad_id}" />
+          <button type="submit" ${full ? "disabled" : ""}>
+            ${row.squad_name} (${row.roster_count}/${row.capacity_total}) - ${row.dept_name} / ${row.hall_name} ${full ? "- 만석" : ""}
+          </button>
+        </form>
+      `;
+    }).join("");
+
+    res.send(htmlPage("대 선택", `
+      <div class="card">
+        <h1>대 선택</h1>
+        <p>문파 가입 후에는 대를 선택해야 터미널에 입장할 수 있습니다.</p>
+        ${list || "<p>선택 가능한 대가 없습니다.</p>"}
+      </div>
+    `));
+  });
+
+  app.post("/api/squad/select", (req, res) => {
+    const session = requireRegistered(req, res);
+    if (!session) return;
+
+    const squadId = String(req.body.squad_id || "").trim();
+    if (!squadId) {
+      res.status(400).send(redirectWithAlert("대를 선택해주세요.", "/choose-squad"));
+      return;
+    }
+
+    const result = assignSquadTx(session.user_id, squadId);
+    if (!result.ok) {
+      if (result.code === "SQUAD_FULL") {
+        res.status(409).send(redirectWithAlert("대 정원이 가득 찼습니다.", "/choose-squad"));
+        return;
+      }
+      if (result.code === "ALREADY_ASSIGNED") {
+        res.redirect("/terminal");
+        return;
+      }
+      res.status(400).send(redirectWithAlert("대 선택 처리에 실패했습니다.", "/choose-squad"));
+      return;
     }
 
     res.redirect("/terminal");

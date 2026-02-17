@@ -24,6 +24,28 @@ function ensureUserColumns(db) {
   if (!columns.includes("training_target_id")) {
     db.exec("ALTER TABLE users ADD COLUMN training_target_id TEXT");
   }
+  if (!columns.includes("squad_id")) {
+    db.exec("ALTER TABLE users ADD COLUMN squad_id TEXT REFERENCES sect_squads(squad_id)");
+  }
+  if (!columns.includes("role_layer_key")) {
+    db.exec("ALTER TABLE users ADD COLUMN role_layer_key TEXT NOT NULL DEFAULT 'L1_MEMBER'");
+  }
+}
+
+function ensureOrgColumns(db) {
+  const squadColumns = db.prepare("PRAGMA table_info(sect_squads)").all().map((row) => row.name);
+  if (!squadColumns.includes("capacity_total")) {
+    db.exec("ALTER TABLE sect_squads ADD COLUMN capacity_total INTEGER NOT NULL DEFAULT 10");
+  }
+  if (!squadColumns.includes("roster_count")) {
+    db.exec("ALTER TABLE sect_squads ADD COLUMN roster_count INTEGER NOT NULL DEFAULT 0");
+  }
+
+  db.exec(`
+    UPDATE sect_squads
+    SET capacity_total = 10
+    WHERE capacity_total IS NULL OR capacity_total <= 0
+  `);
 }
 
 function ensureTrainingCatalogTables(db) {
@@ -155,6 +177,8 @@ function ensureAppTables(db) {
       nickname_unique TEXT NOT NULL UNIQUE,
       gender TEXT NOT NULL CHECK (gender IN ('M', 'F')),
       sect_id TEXT REFERENCES sects(sect_id),
+      squad_id TEXT REFERENCES sect_squads(squad_id),
+      role_layer_key TEXT NOT NULL DEFAULT 'L1_MEMBER',
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
@@ -187,6 +211,7 @@ function ensureAppTables(db) {
   `);
 
   ensureUserColumns(db);
+  ensureOrgColumns(db);
   ensureTrainingCatalogTables(db);
   seedTrainingCatalog(db);
 }

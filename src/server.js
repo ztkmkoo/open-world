@@ -118,7 +118,11 @@ function requireRegistered(req, res) {
 }
 
 function loadUser(userId) {
-  return db.prepare(`SELECT user_id, surname, given_name, nickname_unique, gender, sect_id FROM users WHERE user_id = ?`).get(userId);
+  return db.prepare(`
+    SELECT user_id, surname, given_name, nickname_unique, gender, sect_id, squad_id, role_layer_key
+    FROM users
+    WHERE user_id = ?
+  `).get(userId);
 }
 
 function buildTrainingCommandResponse(result, successHeader) {
@@ -256,6 +260,40 @@ const assignSectTx = db.transaction((userId, sectId) => {
   return { ok: true };
 });
 
+const assignSquadTx = db.transaction((userId, squadId) => {
+  const user = loadUser(userId);
+  if (!user) return { ok: false, code: "NO_USER" };
+  if (!user.sect_id) return { ok: false, code: "NO_SECT" };
+  if (user.squad_id) return { ok: false, code: "ALREADY_ASSIGNED" };
+
+  const squad = db.prepare(`
+    SELECT squad_id, sect_id
+    FROM sect_squads
+    WHERE squad_id = ?
+  `).get(squadId);
+  if (!squad) return { ok: false, code: "NO_SQUAD" };
+  if (squad.sect_id !== user.sect_id) return { ok: false, code: "SQUAD_SECT_MISMATCH" };
+
+  const inc = db.prepare(`
+    UPDATE sect_squads
+    SET roster_count = roster_count + 1
+    WHERE squad_id = ? AND roster_count < capacity_total
+  `).run(squadId);
+  if (inc.changes === 0) return { ok: false, code: "SQUAD_FULL" };
+
+  const userUpdate = db.prepare(`
+    UPDATE users
+    SET squad_id = ?, role_layer_key = 'L1_MEMBER', updated_at = datetime('now')
+    WHERE user_id = ? AND squad_id IS NULL
+  `).run(squadId, userId);
+
+  if (userUpdate.changes === 0) {
+    throw new Error("Failed to assign user to squad after capacity increment.");
+  }
+
+  return { ok: true };
+});
+
 app.get("/", (_req, res) => res.redirect("/login"));
 
 registerAuthRoutes(app, {
@@ -276,6 +314,7 @@ registerCharacterRoutes(app, {
   requireRegistered,
   loadUser,
   assignSectTx,
+  assignSquadTx,
   onSectAssigned: (userId, sectId) => {
     const result = trainingService.ensureSectDefaultUnlocked(userId, sectId, { autoSelect: false });
     if (!result.ok) {
@@ -294,10 +333,18 @@ app.get("/terminal", (req, res) => {
     res.redirect("/choose-faction");
     return;
   }
+  if (!user.squad_id) {
+    res.redirect("/choose-squad");
+    return;
+  }
 
   const detail = getTerminalDetail(db, user.user_id);
   if (!detail || !detail.sect_id) {
     res.redirect("/choose-faction");
+    return;
+  }
+  if (!detail.squad_id) {
+    res.redirect("/choose-squad");
     return;
   }
 
@@ -309,15 +356,15 @@ app.post("/command", (req, res) => {
   if (!session) return;
 
   const user = loadUser(session.user_id);
-  if (!user || !user.sect_id) {
-    res.status(403).json({ ok: false, message: "sect selection required" });
+  if (!user || !user.sect_id || !user.squad_id) {
+    res.status(403).json({ ok: false, message: "sect and squad selection required" });
     return;
   }
 
   const detail = getTerminalDetail(db, user.user_id);
 
-  if (!detail || !detail.sect_id) {
-    res.status(404).json({ ok: false, message: "character/sect not found" });
+  if (!detail || !detail.sect_id || !detail.squad_id) {
+    res.status(404).json({ ok: false, message: "character/sect/squad not found" });
     return;
   }
 
