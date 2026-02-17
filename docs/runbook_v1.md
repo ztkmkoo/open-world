@@ -25,8 +25,8 @@
 
 ## 1) 실행 순서(권장)
 현재 상태 요약:
-- 완료: Step 0, Step 1, Step 2, Step 3, Step 4, Step 5
-- 미완료(다음 스코프): Step 6 (Training Domain Expansion)
+- 완료: Step 0, Step 1, Step 2, Step 3, Step 4, Step 5, Step 6
+- 미완료(다음 스코프): 없음
 
 ### Step 0 — 프로젝트 부트스트랩
 1. Codex 실행: `codex_prompt_00_bootstrap.md`
@@ -84,7 +84,7 @@
    - 문파별 기본 심법이 DB seed로 고정된다.
    - `수련 심법 <이름>` / `수련 무공 <이름>` 명령으로 수련 대상을 변경할 수 있다.
    - 서버가 현재 수련 대상(심법/무공)을 검증 가능한 ID로 저장한다.
-3. 상태: 미완료 (spec drafted, implementation pending)
+3. 상태: 완료 (2026-02-17 Step 6 구현/스모크 검증 통과)
 
 ---
 
