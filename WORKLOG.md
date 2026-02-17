@@ -1369,3 +1369,47 @@
 
 ## Open Questions
 - 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Fix missing training catalog endpoint reported by user (`/api/training/catalog` returned 404).
+
+## Scope
+- src/lib/training-service.js
+- src/server.js
+- src/lib/command-service.js
+- WORKLOG.md
+
+## Plan
+- [x] Add catalog read API in training service.
+- [x] Expose `GET /api/training/catalog` route.
+- [x] Add `수련 목록` command for terminal discoverability.
+- [x] Run syntax + runtime smoke verification.
+- [ ] Commit fix.
+
+## Done
+- [x] Implemented `getTrainingCatalog(userId)` in training service.
+- [x] Added `GET /api/training/catalog` (registered session required).
+- [x] Added `수련 목록` command response.
+- [x] Verified endpoint and command work in runtime smoke.
+
+## Commands Run
+- `node --check src/lib/training-service.js`: success.
+- `node --check src/server.js`: success.
+- `node --check src/lib/command-service.js`: success.
+- Runtime smoke on isolated ports (3104/3105): success.
+  - `catalog_status=200`
+  - `catalog_default_id=INNER_CHEONGUN`
+  - `cmd_list_ok=true`
+
+## Notes/Decisions
+- Kept catalog scope minimal: returns default inner art + inner art list + skill list with unlocked flags.
+
+## Next Steps
+- 1) Commit and push catalog fix.
+- 2) Include endpoint usage in next PR description.
+
+## Open Questions
+- 1) None.

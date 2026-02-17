@@ -194,6 +194,30 @@ function handleTrainingCommand(rawInput, userId, trainingApi) {
     return buildTrainingCommandResponse(status, "【수련】 현재 상태");
   }
 
+  if (sub === "목록") {
+    const catalog = trainingApi.getTrainingCatalog(userId);
+    if (!catalog.ok) {
+      return {
+        ok: false,
+        header: "【오류】 수련 명령 실패",
+        lines: [`코드: ${catalog.code || "UNKNOWN"}`],
+        actions: ["수련 상태", "도움"],
+      };
+    }
+    const unlockedInner = catalog.inner_arts.filter((x) => x.unlocked).map((x) => x.name);
+    const unlockedSkills = catalog.skills.filter((x) => x.unlocked).map((x) => x.name);
+    return {
+      ok: true,
+      header: "【수련】 수련 가능 목록",
+      lines: [
+        `기본 심법: ${catalog.default_inner_art ? catalog.default_inner_art.name : "-"}`,
+        `심법: ${unlockedInner.length ? unlockedInner.join(", ") : "-"}`,
+        `무공: ${unlockedSkills.length ? unlockedSkills.join(", ") : "-"}`,
+      ],
+      actions: ["수련 심법", "수련 무공", "수련 상태"],
+    };
+  }
+
   return {
     ok: false,
     header: "【오류】 수련 명령 실패",
@@ -380,6 +404,19 @@ app.get("/api/me", (req, res) => {
   }
 
   res.json({ ok: true, ...result.profile });
+});
+
+app.get("/api/training/catalog", (req, res) => {
+  const session = requireRegistered(req, res);
+  if (!session) return;
+
+  const result = trainingService.getTrainingCatalog(session.user_id);
+  if (!result.ok) {
+    res.status(404).json({ ok: false, code: result.code });
+    return;
+  }
+
+  res.json(result);
 });
 
 const server = app.listen(PORT, () => {

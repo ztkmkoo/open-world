@@ -441,6 +441,71 @@ function createTrainingService(db) {
     return { ok: true, profile: buildApiMePayload(row) };
   }
 
+  function getTrainingCatalog(userId) {
+    ensureProgressRows(db, userId);
+    const user = db.prepare(`
+      SELECT user_id, sect_id
+      FROM users
+      WHERE user_id = ?
+    `).get(userId);
+    if (!user) return { ok: false, code: "NO_USER" };
+
+    if (user.sect_id) {
+      ensureSectDefaultUnlocked(userId, user.sect_id, { autoSelect: false });
+    }
+
+    const defaultInnerArt = user.sect_id
+      ? db.prepare(`
+          SELECT ia.inner_art_id, ia.name_ko
+          FROM sect_default_inner_arts sdi
+          JOIN inner_arts ia ON ia.inner_art_id = sdi.inner_art_id
+          WHERE sdi.sect_id = ?
+        `).get(user.sect_id)
+      : null;
+
+    const innerArts = db.prepare(`
+      SELECT
+        ia.inner_art_id,
+        ia.name_ko,
+        CASE WHEN uia.user_id IS NULL THEN 0 ELSE 1 END AS unlocked
+      FROM inner_arts ia
+      LEFT JOIN user_inner_arts uia
+        ON uia.inner_art_id = ia.inner_art_id
+       AND uia.user_id = ?
+      ORDER BY ia.name_ko
+    `).all(userId).map((row) => ({
+      id: row.inner_art_id,
+      name: row.name_ko,
+      unlocked: Boolean(row.unlocked),
+    }));
+
+    const skills = db.prepare(`
+      SELECT
+        ms.skill_id,
+        ms.name_ko,
+        CASE WHEN us.user_id IS NULL THEN 0 ELSE 1 END AS unlocked
+      FROM martial_skills ms
+      LEFT JOIN user_skills us
+        ON us.skill_id = ms.skill_id
+       AND us.user_id = ?
+      ORDER BY ms.name_ko
+    `).all(userId).map((row) => ({
+      id: row.skill_id,
+      name: row.name_ko,
+      unlocked: Boolean(row.unlocked),
+    }));
+
+    return {
+      ok: true,
+      sect_id: user.sect_id || null,
+      default_inner_art: defaultInnerArt
+        ? { id: defaultInnerArt.inner_art_id, name: defaultInnerArt.name_ko }
+        : null,
+      inner_arts: innerArts,
+      skills,
+    };
+  }
+
   return {
     setTraining(userId, mode, targetValue) {
       return setTrainingTx(userId, mode, targetValue);
@@ -454,6 +519,7 @@ function createTrainingService(db) {
     getApiMe,
     ensureSectDefaultUnlocked,
     getTrainingStatus,
+    getTrainingCatalog,
     constants: {
       TICK_SECONDS,
       CATCHUP_CAP_SECONDS,
