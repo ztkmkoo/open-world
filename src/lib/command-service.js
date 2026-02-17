@@ -53,7 +53,10 @@ function getTerminalDetail(db, userId) {
       s.prestige,
       s.roster_count,
       s.capacity_total,
-      f.name AS faction_name
+      f.name AS faction_name,
+      u.last_tick_at,
+      u.training_mode,
+      u.training_target_id
     FROM users u
     LEFT JOIN sects s ON s.sect_id = u.sect_id
     LEFT JOIN factions f ON f.faction_id = s.faction_id
@@ -105,6 +108,8 @@ function buildCommandResponse(parsed, detail, deptNames) {
         `이름: ${detail.nickname_unique}`,
         `성별: ${detail.gender}`,
         `소속: ${detail.faction_name} / ${detail.sect_name}`,
+        `수련: ${detail.training_mode || "NONE"} (${detail.training_target_id || "-"})`,
+        `last_tick_at: ${detail.last_tick_at || "-"}`,
         `시간: ${formatKstNow()}`,
       ],
       actions: ["문파", "도움", "상태"],

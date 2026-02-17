@@ -13,12 +13,14 @@ const { renderTerminalContent } = require("./views/terminal-view");
 const { registerAuthRoutes } = require("./routes/auth-routes");
 const { registerCharacterRoutes } = require("./routes/character-routes");
 const { initChatWebSocket } = require("./ws/chat-server");
+const { createTrainingService } = require("./lib/training-service");
 const { SURNAME_ALLOWLIST, GIVEN_NAME_REGEX } = require("./constants");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 const db = initDatabase({ applySeed: true });
+const trainingService = createTrainingService(db);
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
@@ -199,6 +201,68 @@ app.post("/command", (req, res) => {
   console.log(`[COMMAND] ${response.header} | actions=${response.actions.join(",")}`);
 
   res.json(response);
+});
+
+app.post("/api/training/set", (req, res) => {
+  const session = requireRegistered(req, res);
+  if (!session) return;
+
+  const mode = String(req.body.mode || "NONE").trim().toUpperCase();
+  const rawTarget = String(req.body.target_id || "").trim();
+  const targetId = rawTarget ? rawTarget.slice(0, 64) : null;
+
+  const result = trainingService.setTraining(session.user_id, mode, targetId);
+  if (!result.ok) {
+    res.status(400).json({ ok: false, code: result.code });
+    return;
+  }
+
+  res.json({
+    ok: true,
+    training_mode: result.profile.training_mode,
+    training_target_id: result.profile.training_target_id,
+    stars: result.profile.stars,
+  });
+});
+
+app.post("/tick", (req, res) => {
+  const session = requireRegistered(req, res);
+  if (!session) return;
+
+  const clientRequestId = String(req.body.client_request_id || "").trim().slice(0, 80);
+  const result = trainingService.tick(session.user_id, clientRequestId);
+  if (!result.ok) {
+    res.status(400).json({ ok: false, code: result.code });
+    return;
+  }
+
+  res.json(result);
+});
+
+app.post("/tick/catchup", (req, res) => {
+  const session = requireRegistered(req, res);
+  if (!session) return;
+
+  const result = trainingService.catchup(session.user_id);
+  if (!result.ok) {
+    res.status(400).json({ ok: false, code: result.code });
+    return;
+  }
+
+  res.json(result);
+});
+
+app.get("/api/me", (req, res) => {
+  const session = requireRegistered(req, res);
+  if (!session) return;
+
+  const result = trainingService.getApiMe(session.user_id);
+  if (!result.ok) {
+    res.status(404).json({ ok: false, code: result.code });
+    return;
+  }
+
+  res.json({ ok: true, ...result.profile });
 });
 
 const server = app.listen(PORT, () => {
