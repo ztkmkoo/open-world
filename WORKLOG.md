@@ -1195,3 +1195,88 @@
 
 ## Open Questions
 - 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Expand training specs to define sect default inner arts, training command grammar, and persistent storage model for selected inner art or martial skill.
+
+## Scope
+- docs/training_spec_v2.md (new)
+- docs/runbook_v1.md
+- WORKLOG.md
+
+## Plan
+- [x] Confirm current branch/status.
+- [ ] Record worklog start entry.
+- [ ] Switch to updated `main` and create a dedicated spec branch.
+- [ ] Draft v2 training spec (inner-art defaults, command syntax, storage schema).
+- [ ] Align runbook next scope with the new spec work.
+- [ ] Commit docs changes.
+
+## Done
+- [x] Confirmed clean branch state before spec work.
+
+## Commands Run
+- `git branch --show-current`: success (`feat/health-endpoint-step0`).
+- `git status --short --branch`: success.
+
+## Notes/Decisions
+- This scope is docs-first to lock data contracts before server command implementation.
+
+## Next Steps
+- 1) Create a dedicated branch for training spec expansion.
+- 2) Publish concrete schema/command rules in docs.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Expand training specs with sect default inner arts and command/storage contracts before implementation.
+
+## Scope
+- docs/training_spec_v2.md
+- docs/runbook_v1.md
+- WORKLOG.md
+
+## Plan
+- [x] Create a dedicated docs branch from updated `main`.
+- [x] Add a v2 training spec document for inner-art defaults and command grammar.
+- [x] Update runbook with Step 6 as the next implementation scope.
+- [ ] Commit docs changes.
+
+## Done
+- [x] Added `docs/training_spec_v2.md` with:
+  - common tick/training rules
+  - terminal command grammar (`수련 심법`, `수련 무공`, `수련 중지`, `수련 상태`)
+  - persistent storage model for selected inner art/skill
+  - sect default inner arts fixed for seed mapping
+- [x] Updated `docs/runbook_v1.md` to include Step 6 training expansion as next scope.
+
+## Commands Run
+- `git stash push -m "temp-worklog-before-training-spec-branch" WORKLOG.md`: success.
+- `git checkout main`: success.
+- `git fetch origin`: success (`origin/main` -> `c238185`).
+- `git pull --ff-only origin main`: success (`f349e79` -> `c238185`).
+- `git checkout -b docs/training-spec-v2-inner-art-default`: success.
+- `git stash pop`: success.
+- `rg --line-number "수련|training|tick|catchup|last_tick_at|/api/training/set|/tick" ...`: success.
+- `Get-Content docs/seed_v1.sql -Encoding utf8`: success.
+- `Get-Content docs/wuxia_mvp_spec_v1.md -Encoding utf8`: success.
+- `Get-Content docs/codex_prompt_03_tick_training.md -Encoding utf8`: success.
+
+## Notes/Decisions
+- Values that were not explicitly provided are marked `TBD` instead of inferred defaults.
+- This scope is docs-only; implementation will follow Step 6.
+
+## Next Steps
+- 1) Finalize `TBD` combat modifier values for `INNER_HYEOLYEOM` and `INNER_MUHYEONG`.
+- 2) Implement DB schema/seed and command parser according to `training_spec_v2.md`.
+
+## Open Questions
+- 1) Should default inner art be auto-selected as active focus immediately after sect assignment?
+- 2) Do you want `MERIDIAN_ART` mode kept in v2, or restricted to `NONE|INNER_ART|SKILL` for now?
