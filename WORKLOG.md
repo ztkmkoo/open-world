@@ -1072,3 +1072,41 @@
 
 ## Open Questions
 - 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- After PR #10 merge, sync local `main` and align runbook completion status with merged Step 4/5 reality.
+
+## Scope
+- docs/runbook_v1.md
+- WORKLOG.md
+
+## Plan
+- [x] Sync local `main` to latest `origin/main`.
+- [x] Verify merged Step 5 commit is present.
+- [x] Create docs branch and update runbook status for Step 4/5.
+- [ ] Commit docs-only update.
+
+## Done
+- [x] Synced `main` to `origin/main` (`60da2cb`, PR #10 merged).
+- [x] Created branch `docs/runbook-step4-step5-complete`.
+- [x] Updated runbook summary/checklist and Step 4/5 status to completed.
+
+## Commands Run
+- `git checkout main`: success.
+- `git fetch origin`: success.
+- `git pull --ff-only origin main`: success (`2a6b0ae` -> `60da2cb`).
+- `git checkout -b docs/runbook-step4-step5-complete`: success.
+- `rg --line-number "Step 5|상태:|미완료|완료" docs/runbook_v1.md`: success.
+
+## Notes/Decisions
+- Keep this scope docs-only; no runtime code changes.
+
+## Next Steps
+- 1) Commit docs update.
+- 2) Push branch and open PR (if requested).
+
+## Open Questions
+- 1) None.
