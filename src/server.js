@@ -222,7 +222,7 @@ function handleTrainingCommand(rawInput, userId, trainingApi) {
     ok: false,
     header: "【오류】 수련 명령 실패",
     lines: [
-      "지원 형식: 수련 심법 <심법명> | 수련 무공 <무공명> | 수련 중지 | 수련 상태",
+      "지원 형식: 수련 심법 <심법명> | 수련 무공 <무공명> | 수련 중지 | 수련 상태 | 수련 목록",
     ],
     actions: ["수련 상태", "도움"],
   };

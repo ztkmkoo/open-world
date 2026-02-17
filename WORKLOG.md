@@ -1413,3 +1413,98 @@
 
 ## Open Questions
 - 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Improve terminal command readability: new-line command start and consistent block-based response rendering.
+
+## Scope
+- src/views/terminal-view.js
+- src/server.js
+- docs/training_spec_v2.md
+- WORKLOG.md
+
+## Plan
+- [x] Apply terminal renderer changes for block formatting and clear separators.
+- [x] Align training command help/grammar text.
+- [x] Document formatting rule in training spec.
+- [x] Run syntax/runtime smoke checks.
+- [ ] Commit changes.
+
+## Done
+- [x] Added `appendLogLine`, `appendLogSpacer`, and `appendDivider` in terminal view script.
+- [x] Enforced command input rendering on a fresh line with spacer before `> command`.
+- [x] Standardized response block rendering: header -> body lines -> next actions -> divider.
+- [x] Reduced tick/catchup success noise by logging only meaningful success changes.
+- [x] Updated training command fallback text to include `수련 목록`.
+- [x] Added output formatting contract in `docs/training_spec_v2.md`.
+
+## Commands Run
+- `node --check src/views/terminal-view.js`: success.
+- `node --check src/server.js`: success.
+- `node --check src/lib/command-service.js`: success.
+- Runtime smoke on isolated port 3106: success.
+  - help command response: success
+  - training list command response: success
+  - terminal page includes formatting helpers (`appendLogSpacer`, `appendDivider`)
+
+## Notes/Decisions
+- API response shape was kept unchanged to avoid frontend/backend contract break.
+
+## Next Steps
+- 1) Commit and push formatting improvements.
+- 2) Include before/after terminal output screenshot in PR if needed.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Add automated test cases for terminal command output formatting and command/catalog response verification.
+
+## Scope
+- scripts/test-command-output-format.js (new)
+- package.json
+- WORKLOG.md
+
+## Plan
+- [x] Add node-based test script runnable without extra framework.
+- [ ] Verify `/terminal` script formatting hooks and command API responses.
+- [ ] Add npm script entry for repeatable execution.
+- [ ] Run test and commit.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Add automated test cases for command output formatting and training catalog/list behavior.
+
+## Scope
+- scripts/test-command-output-format.js
+- package.json
+- WORKLOG.md
+
+## Plan
+- [x] Add runnable node test script.
+- [x] Wire npm script for repeatable execution.
+- [x] Verify command and catalog behavior with runtime assertions.
+- [ ] Commit and push.
+
+## Done
+- [x] Added `scripts/test-command-output-format.js`.
+- [x] Added npm script `test:command-format`.
+- [x] Verified test pass:
+  - `/terminal` includes formatting helpers
+  - `/command` `도움` and `수련 목록` succeed
+  - `/api/training/catalog` succeeds and default inner art mapping is correct
+  - simulated log output confirms newline spacer/divider/next-action layout
+
+## Commands Run
+- `npm.cmd run test:command-format`: success (`[PASS] command output format and command/catalog behavior verified`).
+
+## Notes/Decisions
+- Test is framework-free (`node` only) to match current project tooling.
