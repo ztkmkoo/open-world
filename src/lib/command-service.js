@@ -48,12 +48,18 @@ function getTerminalDetail(db, userId) {
     SELECT
       u.nickname_unique,
       u.gender,
+      u.squad_id,
+      u.role_layer_key,
       s.sect_id,
       s.name AS sect_name,
       s.prestige,
       s.roster_count,
       s.capacity_total,
       f.name AS faction_name,
+      srt.title AS role_title,
+      sd.display_name AS dept_name,
+      sh.display_name AS hall_name,
+      ss.display_name AS squad_name,
       u.last_tick_at,
       u.training_mode,
       u.training_target_id,
@@ -62,6 +68,12 @@ function getTerminalDetail(db, userId) {
     FROM users u
     LEFT JOIN sects s ON s.sect_id = u.sect_id
     LEFT JOIN factions f ON f.faction_id = s.faction_id
+    LEFT JOIN sect_role_titles srt
+      ON srt.sect_id = s.sect_id
+     AND srt.layer_key = u.role_layer_key
+    LEFT JOIN sect_squads ss ON ss.squad_id = u.squad_id
+    LEFT JOIN sect_halls sh ON sh.hall_id = ss.hall_id
+    LEFT JOIN sect_departments sd ON sd.dept_id = sh.dept_id
     LEFT JOIN inner_arts ia ON ia.inner_art_id = u.training_target_id
     LEFT JOIN martial_skills ms ON ms.skill_id = u.training_target_id
     WHERE u.user_id = ?
@@ -83,14 +95,14 @@ function buildHelpLinesFor(target) {
     return [
       "상태(status): 캐릭터와 소속 상태를 보여줍니다.",
       "예시: 상태",
-      "표시: 이름/성별/소속/현재시간(KST)",
+      "표시: 이름/성별/소속/직위/위치/수련/현재시간(KST)",
     ];
   }
   if (target === "sect") {
     return [
       "문파(sect): 소속 문파 상세 정보를 보여줍니다.",
       "예시: 문파",
-      "표시: 문파/세력/위상/정원/조직(최대 3개)",
+      "표시: 문파/세력/위상/정원/조직",
     ];
   }
   return [
@@ -112,11 +124,13 @@ function buildCommandResponse(parsed, detail, deptNames) {
 
     return {
       ok: true,
-      header: "【상태】 캐릭터 현황",
+      header: "【상세정보】 캐릭터 현황",
       lines: [
         `이름: ${detail.nickname_unique}`,
         `성별: ${detail.gender}`,
         `소속: ${detail.faction_name} / ${detail.sect_name}`,
+        `직위: ${detail.role_title || detail.role_layer_key || "-"}`,
+        `위치: ${detail.dept_name || "-"} > ${detail.hall_name || "-"} > ${detail.squad_name || "-"}`,
         `수련: ${detail.training_mode || "NONE"} (${trainingTargetName})`,
         `last_tick_at: ${detail.last_tick_at || "-"}`,
         `시간: ${formatKstNow()}`,
@@ -135,9 +149,12 @@ function buildCommandResponse(parsed, detail, deptNames) {
     if (deptNames.length > 0) {
       lines.push(`조직: ${deptNames.join(", ")}`);
     }
+    if (detail.squad_name) {
+      lines.push(`내 소속: ${detail.dept_name || "-"} > ${detail.hall_name || "-"} > ${detail.squad_name}`);
+    }
     return {
       ok: true,
-      header: "【문파】 소속 정보",
+      header: "【문파정보】 소속 정보",
       lines,
       actions: ["상태", "도움", "문파"],
     };

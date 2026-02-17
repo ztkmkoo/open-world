@@ -1285,6 +1285,120 @@
 - 2026-02-17 (local)
 
 ## Goal
+- Implement mandatory squad assignment after sect join and show role/location details in status output.
+
+## Scope
+- src/lib/db.js
+- src/server.js
+- src/routes/character-routes.js
+- src/lib/command-service.js
+- docs/training_spec_v2.md
+- docs/runbook_v1.md
+- WORKLOG.md
+
+## Plan
+- [ ] Add compatibility schema updates for user squad/role and squad capacity counters.
+- [ ] Add squad selection page/API and enforce sect -> squad -> terminal flow.
+- [ ] Extend status payload/output with role title and organization path.
+- [ ] Update spec/runbook documents to match the flow and display contract.
+- [ ] Run verification and record command results.
+
+## Done
+- [x] Confirmed branch `feat/sect-squad-assignment-flow` with clean baseline.
+- [x] Confirmed sect organization seed has fixed 3 departments / 6 halls / 12 squads.
+
+## Commands Run
+- `git branch --show-current`: success.
+- `git status --short`: success.
+- `Get-Content WORKLOG.md`: success.
+- `Get-Content src/lib/db.js`: success.
+- `Get-Content src/routes/character-routes.js`: success.
+- `Get-Content src/lib/command-service.js`: success.
+- `Get-Content src/lib/training-service.js`: success.
+- `Get-Content src/server.js`: success.
+- `Get-Content docs/seed_v1.sql`: success.
+- `rg --line-number "...": success.
+
+## Notes/Decisions
+- Squad capacity is fixed to 10 per user confirmation.
+- Terminal access will require both sect assignment and squad assignment.
+
+## Next Steps
+- 1) Patch schema compatibility in DB init.
+- 2) Implement squad selection route flow and API.
+- 3) Extend status command output and docs.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Complete sect-squad mandatory assignment flow and align status output/spec with location and role details.
+
+## Scope
+- src/lib/db.js
+- src/server.js
+- src/routes/character-routes.js
+- src/lib/command-service.js
+- scripts/test-command-output-format.js
+- docs/training_spec_v2.md
+- docs/sect_squad_flow_spec_v1.md
+- WORKLOG.md
+
+## Plan
+- [x] Add compatibility schema updates for squad assignment.
+- [x] Implement `/choose-squad` and squad assignment API.
+- [x] Enforce terminal/command access by `sect_id + squad_id`.
+- [x] Extend status output with role and location path.
+- [x] Update spec docs and run verification.
+
+## Done
+- [x] Added DB compatibility migration:
+  - `users.squad_id`
+  - `users.role_layer_key`
+  - `sect_squads.capacity_total` (default 10)
+  - `sect_squads.roster_count`
+- [x] Implemented mandatory squad selection flow:
+  - `GET /choose-squad`
+  - `POST /api/squad/select`
+- [x] Added atomic squad capacity check in `assignSquadTx`.
+- [x] Updated redirects:
+  - sect-selected but squad-missing user now goes to `/choose-squad`
+  - `/terminal` requires squad assignment
+- [x] Reworked command service (UTF-8 clean) and added status fields:
+  - role title
+  - location path (`department > hall > squad`)
+- [x] Replaced command format smoke test to reflect mandatory squad flow and new status contract.
+- [x] Added/updated specs:
+  - `docs/sect_squad_flow_spec_v1.md` (new)
+  - `docs/training_spec_v2.md` section 8/9
+
+## Commands Run
+- `node --check src/lib/db.js`: success.
+- `node --check src/routes/character-routes.js`: success.
+- `node --check src/lib/command-service.js`: success.
+- `node --check src/server.js`: success.
+- `npm.cmd run db:init`: success.
+- `node --check scripts/test-command-output-format.js`: success.
+- `npm.cmd run test:command-format`: success.
+
+## Notes/Decisions
+- Squad capacity policy fixed to 10 as requested.
+- Status contract now explicitly exposes role and org path for player location.
+
+## Next Steps
+- 1) Commit and push branch `feat/sect-squad-assignment-flow`.
+- 2) Open PR with summary of flow/schema/status changes.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
 - Implement Step 6 training domain expansion: sect default inner art seed, training target persistence for inner art/skill, and terminal command flow (`수련 심법/무공/중지/상태`).
 
 ## Scope
@@ -1508,3 +1622,31 @@
 
 ## Notes/Decisions
 - Test is framework-free (`node` only) to match current project tooling.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Prepare clear resume notes before push so next session can continue without context loss.
+
+## Scope
+- WORKLOG.md
+- Git push handoff
+
+## Plan
+- [x] Record current branch and completion snapshot.
+- [x] Record immediate push/PR actions.
+- [x] Record post-merge development priorities.
+
+## Done
+- [x] Added resume-oriented Next Steps with exact order.
+
+## Next Steps
+- 1) Commit current changes on `feat/sect-squad-assignment-flow`.
+- 2) Push branch to origin and open PR.
+- 3) After merge, polish `상태`/`문파` output wording for terminal readability.
+- 4) Add API tests for squad full/race (atomic assign path).
+- 5) Decide whether `/api/me` should include role/location; implement if required.
+
+## Open Questions
+- 1) None.

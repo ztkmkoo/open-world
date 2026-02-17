@@ -137,3 +137,28 @@ When a user is assigned to a sect for the first time, server must ensure:
   3. command parser extension (`수련 심법`, `수련 무공`, `수련 중지`, `수련 상태`)
   4. tick engine update to consume inner-art growth map
 - Any `TBD` value must be explicitly finalized before production balancing tests.
+
+## 8) Sect -> Squad Assignment Flow Contract
+- After sect assignment, user must select a squad before entering `/terminal`.
+- Required flow:
+  1. `/choose-faction`
+  2. `/choose-sect`
+  3. `/choose-squad`
+  4. `/terminal`
+- Capacity policy:
+  - sect capacity is still managed at sect level (`144`)
+  - squad capacity is fixed to `10` per squad
+  - if a squad is full, assignment must be rejected server-side (atomic check + increment)
+- Persistence contract:
+  - `users.squad_id` stores selected squad
+  - `users.role_layer_key` stores role layer key (default `L1_MEMBER` on squad join)
+  - `sect_squads.capacity_total` and `sect_squads.roster_count` track squad slots
+
+## 9) Status Output Contract (Terminal `/command 상태`)
+- Status output must include:
+  - role title (resolved by `sect_role_titles` with `users.role_layer_key`)
+  - organization path for current position:
+    - `department > hall > squad`
+- Example fields:
+  - `직위: 청운문도` (or sect-specific title)
+  - `위치: 연무전 > 청검당 > 청검1대`
