@@ -1413,3 +1413,49 @@
 
 ## Open Questions
 - 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Improve terminal command readability: new-line command start and consistent block-based response rendering.
+
+## Scope
+- src/views/terminal-view.js
+- src/server.js
+- docs/training_spec_v2.md
+- WORKLOG.md
+
+## Plan
+- [x] Apply terminal renderer changes for block formatting and clear separators.
+- [x] Align training command help/grammar text.
+- [x] Document formatting rule in training spec.
+- [x] Run syntax/runtime smoke checks.
+- [ ] Commit changes.
+
+## Done
+- [x] Added `appendLogLine`, `appendLogSpacer`, and `appendDivider` in terminal view script.
+- [x] Enforced command input rendering on a fresh line with spacer before `> command`.
+- [x] Standardized response block rendering: header -> body lines -> next actions -> divider.
+- [x] Reduced tick/catchup success noise by logging only meaningful success changes.
+- [x] Updated training command fallback text to include `수련 목록`.
+- [x] Added output formatting contract in `docs/training_spec_v2.md`.
+
+## Commands Run
+- `node --check src/views/terminal-view.js`: success.
+- `node --check src/server.js`: success.
+- `node --check src/lib/command-service.js`: success.
+- Runtime smoke on isolated port 3106: success.
+  - help command response: success
+  - training list command response: success
+  - terminal page includes formatting helpers (`appendLogSpacer`, `appendDivider`)
+
+## Notes/Decisions
+- API response shape was kept unchanged to avoid frontend/backend contract break.
+
+## Next Steps
+- 1) Commit and push formatting improvements.
+- 2) Include before/after terminal output screenshot in PR if needed.
+
+## Open Questions
+- 1) None.

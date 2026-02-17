@@ -44,24 +44,46 @@ function renderTerminalContent(detail) {
         };
         let tickTimerId = null;
 
-        function appendLog(text) {
-          logEl.textContent += "\\n" + text;
+        function appendLogLine(text) {
+          const line = String(text || "");
+          if (!logEl.textContent) {
+            logEl.textContent = line;
+          } else {
+            logEl.textContent += "\\n" + line;
+          }
           logEl.scrollTop = logEl.scrollHeight;
         }
 
-        function renderResponse(data) {
-          appendLog("");
-          appendLog(data.header || "【오류】 응답 형식 오류");
-          for (const line of data.lines || []) {
-            appendLog("- " + line);
+        function appendLogSpacer() {
+          if (!logEl.textContent) return;
+          if (!logEl.textContent.endsWith("\\n")) {
+            logEl.textContent += "\\n";
           }
-          appendLog("추천: " + (data.actions || []).join(" | "));
+          logEl.textContent += "\\n";
+          logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function appendDivider() {
+          appendLogLine("────────────────────────────────");
+        }
+
+        function renderResponse(data) {
+          appendLogLine(data.header || "【오류】 응답 형식 오류");
+          for (const line of data.lines || []) {
+            appendLogLine("  - " + line);
+          }
+          const actions = data.actions || [];
+          if (actions.length > 0) {
+            appendLogLine("  다음: " + actions.join(" | "));
+          }
+          appendDivider();
         }
 
         async function sendCommand() {
           const input = inputEl.value.trim();
           if (!input) return;
-          appendLog("> " + input);
+          appendLogSpacer();
+          appendLogLine("> " + input);
           inputEl.value = "";
           try {
             const res = await fetch("/command", {
@@ -72,10 +94,12 @@ function renderTerminalContent(detail) {
             const payload = await res.json();
             renderResponse(payload);
             if (!res.ok) {
-              appendLog("요청 실패: HTTP " + res.status);
+              appendLogLine("  ! 요청 실패: HTTP " + res.status);
+              appendDivider();
             }
           } catch (_err) {
-            appendLog("요청 실패: 네트워크 오류");
+            appendLogLine("  ! 요청 실패: 네트워크 오류");
+            appendDivider();
           }
         }
 
@@ -96,12 +120,15 @@ function renderTerminalContent(detail) {
             });
             const payload = await res.json();
             if (!res.ok || !payload.ok) {
-              appendLog("[SYSTEM] catchup failed: HTTP " + res.status);
+              appendLogLine("[SYSTEM] catchup failed: HTTP " + res.status);
               return;
             }
-            appendLog("[SYSTEM] catchup applied ticks: " + (payload.tick_count || 0));
+            const tickCount = Number(payload.tick_count || 0);
+            if (tickCount > 0) {
+              appendLogLine("[SYSTEM] catchup applied ticks: " + tickCount);
+            }
           } catch (_error) {
-            appendLog("[SYSTEM] catchup skipped: network error");
+            appendLogLine("[SYSTEM] catchup skipped: network error");
           }
         }
 
@@ -117,21 +144,23 @@ function renderTerminalContent(detail) {
             });
             const payload = await res.json();
             if (!res.ok || !payload.ok) {
-              appendLog("[SYSTEM] tick failed: HTTP " + res.status);
+              appendLogLine("[SYSTEM] tick failed: HTTP " + res.status);
               return;
             }
             const applied = Number(payload.applied_ticks || 0);
             if (payload.duplicate) {
-              appendLog("[SYSTEM] tick ignored (duplicate request_id)");
+              appendLogLine("[SYSTEM] tick ignored (duplicate request_id)");
               return;
             }
             if (payload.penalized) {
-              appendLog("[SYSTEM] tick penalized (too early)");
+              appendLogLine("[SYSTEM] tick penalized (too early)");
               return;
             }
-            appendLog("[SYSTEM] tick applied: " + applied);
+            if (applied > 0) {
+              appendLogLine("[SYSTEM] tick applied: " + applied);
+            }
           } catch (_error) {
-            appendLog("[SYSTEM] tick skipped: network error");
+            appendLogLine("[SYSTEM] tick skipped: network error");
           }
         }
 

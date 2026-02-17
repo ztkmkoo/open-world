@@ -27,6 +27,19 @@ Status: Draft for implementation
   - Sets `training_mode=NONE` and clears the active target.
 - `수련 상태`
   - Shows current mode, selected target, star tier, and last tick timestamp.
+- `수련 목록`
+  - Shows default inner art and currently unlocked trainable targets.
+
+## 2.1) Terminal Output Formatting Rule
+- Every command request must start on a new line in the terminal log.
+- Every command response must be rendered as a readable block:
+  1. header line
+  2. indented body lines (`- ...`)
+  3. next-action line (`다음: ...`) when actions exist
+  4. visual divider line
+- System tick/catchup logs should avoid noisy success spam:
+  - show errors always
+  - show success only when meaningful state changed (for example, applied ticks > 0)
 
 ## 3) Persistent Storage Contract
 - Existing user training fields remain canonical:
