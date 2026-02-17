@@ -1110,3 +1110,88 @@
 
 ## Open Questions
 - 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Start next scope after Step 5 merge: implement Step 0 `/health` endpoint and verify runtime health check.
+
+## Scope
+- src/server.js
+- docs/runbook_v1.md (if status update is needed)
+- WORKLOG.md
+
+## Plan
+- [x] Check current branch/status.
+- [ ] Record worklog start entry.
+- [ ] Sync local `main` and create health-task branch.
+- [ ] Implement `/health` endpoint.
+- [ ] Run verification and commit.
+
+## Done
+- [x] Confirmed current branch `docs/runbook-step4-step5-complete` and clean status.
+
+## Commands Run
+- `git branch --show-current`: success (`docs/runbook-step4-step5-complete`).
+- `git status --short --branch`: success.
+
+## Notes/Decisions
+- Next implementation scope is Step 0 hardening (`/health`).
+
+## Next Steps
+- 1) Sync main and branch off for Step 0 implementation.
+- 2) Add and verify health endpoint.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Complete remaining Step 0 by adding and verifying `/health` endpoint.
+
+## Scope
+- src/server.js
+- docs/runbook_v1.md
+- WORKLOG.md
+
+## Plan
+- [x] Sync main and create Step 0 task branch.
+- [x] Implement public `/health` endpoint with DB readiness check.
+- [x] Run syntax/runtime verification.
+- [x] Update runbook Step 0 status to completed.
+- [ ] Commit scoped changes.
+
+## Done
+- [x] Added `GET /health` endpoint.
+- [x] Added DB ping (`SELECT 1`) and 503 fallback payload when DB is unavailable.
+- [x] Verified `/health` returns 200 with `ok=true`, `db=up` in runtime smoke test.
+- [x] Updated runbook summary/Step 0 status to fully completed state.
+
+## Commands Run
+- `git stash push -m "temp-worklog-before-step0-health" WORKLOG.md`: success.
+- `git checkout main`: success.
+- `git fetch origin`: success (`origin/main` -> `f349e79`).
+- `git pull --ff-only origin main`: success (`60da2cb` -> `f349e79`).
+- `git checkout -b feat/health-endpoint-step0`: success.
+- `git stash pop`: success.
+- `npm.cmd run db:init`: success.
+- `node --check src/server.js`: success.
+- `node -` (runtime health smoke): success.
+  - `health_status=200`
+  - `health_ok=true`
+  - `health_service=open-world`
+  - `health_db=up`
+
+## Notes/Decisions
+- Kept `/health` unauthenticated for basic infra/liveness probing.
+- Response includes only minimal operational fields (`ok`, `service`, `db`, `now`).
+
+## Next Steps
+- 1) Commit Step 0 code/docs update.
+- 2) Push branch and open PR when requested.
+
+## Open Questions
+- 1) None.

@@ -24,8 +24,8 @@
 
 ## 1) 실행 순서(권장)
 현재 상태 요약:
-- 완료: Step 1, Step 2, Step 3, Step 4, Step 5
-- 미완료(다음 스코프): Step 0(`/health` endpoint 보강)
+- 완료: Step 0, Step 1, Step 2, Step 3, Step 4, Step 5
+- 미완료(다음 스코프): 없음
 
 ### Step 0 — 프로젝트 부트스트랩
 1. Codex 실행: `codex_prompt_00_bootstrap.md`
@@ -33,7 +33,7 @@
    - `npm install` 성공
    - `npm run dev`로 서버 기동
    - `/health` 200 OK
-3. 상태: 보류(현재 코드에는 `/health` 엔드포인트 미구현)
+3. 상태: 완료 (2026-02-17 `/health` 200 검증 통과)
 
 ### Step 1 — 로그인/캐릭터 생성/세력·문파 선택
 1. Codex 실행: `codex_prompt_login_to_sect_select.md`
