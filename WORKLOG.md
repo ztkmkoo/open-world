@@ -1459,3 +1459,52 @@
 
 ## Open Questions
 - 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Add automated test cases for terminal command output formatting and command/catalog response verification.
+
+## Scope
+- scripts/test-command-output-format.js (new)
+- package.json
+- WORKLOG.md
+
+## Plan
+- [x] Add node-based test script runnable without extra framework.
+- [ ] Verify `/terminal` script formatting hooks and command API responses.
+- [ ] Add npm script entry for repeatable execution.
+- [ ] Run test and commit.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Add automated test cases for command output formatting and training catalog/list behavior.
+
+## Scope
+- scripts/test-command-output-format.js
+- package.json
+- WORKLOG.md
+
+## Plan
+- [x] Add runnable node test script.
+- [x] Wire npm script for repeatable execution.
+- [x] Verify command and catalog behavior with runtime assertions.
+- [ ] Commit and push.
+
+## Done
+- [x] Added `scripts/test-command-output-format.js`.
+- [x] Added npm script `test:command-format`.
+- [x] Verified test pass:
+  - `/terminal` includes formatting helpers
+  - `/command` `도움` and `수련 목록` succeed
+  - `/api/training/catalog` succeeds and default inner art mapping is correct
+  - simulated log output confirms newline spacer/divider/next-action layout
+
+## Commands Run
+- `npm.cmd run test:command-format`: success (`[PASS] command output format and command/catalog behavior verified`).
+
+## Notes/Decisions
+- Test is framework-free (`node` only) to match current project tooling.
