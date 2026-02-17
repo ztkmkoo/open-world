@@ -26,6 +26,25 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+app.get("/health", (_req, res) => {
+  try {
+    db.prepare("SELECT 1 AS ok").get();
+    res.json({
+      ok: true,
+      service: "open-world",
+      db: "up",
+      now: new Date().toISOString(),
+    });
+  } catch (error) {
+    res.status(503).json({
+      ok: false,
+      service: "open-world",
+      db: "down",
+      error: "db_unavailable",
+    });
+  }
+});
+
 function htmlPage(title, content) {
   return `<!doctype html>
 <html lang="ko">
