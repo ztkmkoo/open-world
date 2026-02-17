@@ -12,6 +12,20 @@ function openDb() {
   return db;
 }
 
+function ensureUserColumns(db) {
+  const columns = db.prepare("PRAGMA table_info(users)").all().map((row) => row.name);
+
+  if (!columns.includes("last_tick_at")) {
+    db.exec("ALTER TABLE users ADD COLUMN last_tick_at TEXT");
+  }
+  if (!columns.includes("training_mode")) {
+    db.exec("ALTER TABLE users ADD COLUMN training_mode TEXT NOT NULL DEFAULT 'NONE'");
+  }
+  if (!columns.includes("training_target_id")) {
+    db.exec("ALTER TABLE users ADD COLUMN training_target_id TEXT");
+  }
+}
+
 function ensureAppTables(db) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -32,7 +46,27 @@ function ensureAppTables(db) {
       expires_at TEXT NOT NULL,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS training_progress (
+      user_id TEXT PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
+      inner_art_star INTEGER NOT NULL DEFAULT 0,
+      inner_art_points INTEGER NOT NULL DEFAULT 0,
+      skill_star INTEGER NOT NULL DEFAULT 0,
+      skill_points INTEGER NOT NULL DEFAULT 0,
+      meridian_star INTEGER NOT NULL DEFAULT 0,
+      meridian_points INTEGER NOT NULL DEFAULT 0,
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS tick_request_log (
+      user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+      client_request_id TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (user_id, client_request_id)
+    );
   `);
+
+  ensureUserColumns(db);
 }
 
 function applySeedSql(db) {

@@ -24,8 +24,8 @@
 
 ## 1) 실행 순서(권장)
 현재 상태 요약:
-- 완료: Step 1, Step 2
-- 미완료(다음 스코프): Step 3, Step 4, Step 5
+- 완료: Step 1, Step 2, Step 3
+- 미완료(다음 스코프): Step 4, Step 5
 
 ### Step 0 — 프로젝트 부트스트랩
 1. Codex 실행: `codex_prompt_00_bootstrap.md`
@@ -59,7 +59,7 @@
    - 같은 브라우저 2개 창에서 전체 채팅 송수신
    - 문파 채팅은 같은 sect끼리만 보임
    - `@상대`로 귓말(whisper) 송수신
-3. 상태: 미완료 (다음 우선 구현 단계)
+3. 상태: 완료 (2026-02-17 WS 스모크 검증 통과)
 
 ### Step 4 — Tick/Catchup + 수련 상태(서버)
 1. Codex 실행: `codex_prompt_03_tick_training.md`
@@ -83,7 +83,7 @@
 - [x] 신규 유저: 로그인→캐릭터 생성→세력→문파→터미널 진입
 - [x] sect 정원 144 강제(만석 시 서버 차단)
 - [x] `/command` 최소 3개 명령 동작 + 템플릿 준수
-- [ ] 채팅(전체/문파/귓) 동작
+- [x] 채팅(전체/문파/귓) 동작
 - [ ] tick/catchup 동작 + 부정행위 처리(last_tick_at=now)
 - [ ] 자동 tick이 서버 부하 없이 동작(개발 환경에서 interval 축소로 테스트)
 

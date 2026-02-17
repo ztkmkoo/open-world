@@ -793,3 +793,190 @@
 
 ## Open Questions
 - 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Resume yesterday's work by syncing local `main` with `origin/main` and starting from a fresh task branch.
+
+## Scope
+- Git branch operations only (`fetch`, `pull --ff-only`, new branch)
+- WORKLOG.md
+
+## Plan
+- [x] Check current branch/status.
+- [ ] Update WORKLOG start entry.
+- [ ] Switch to `main`, fetch, and pull latest from `origin/main`.
+- [ ] Create and switch to a new task branch.
+- [ ] Update WORKLOG with results and next steps.
+
+## Done
+- [x] Confirmed current branch and clean status.
+
+## Commands Run
+- `git branch --show-current`: success (`feature/ws-chat-minimum`).
+- `git status --short --branch`: success.
+
+## Notes/Decisions
+- Branch name for this start: `feature/resume-2026-02-17`.
+
+## Next Steps
+- 1) Append this start entry and proceed with sync/branch creation.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Complete branch-start workflow: sync `main` and create a fresh task branch.
+
+## Scope
+- Git branch operations only
+- WORKLOG.md
+
+## Plan
+- [x] Check current branch/status.
+- [x] Update WORKLOG start entry.
+- [x] Switch to `main`, fetch, and pull latest from `origin/main`.
+- [x] Create and switch to a new task branch.
+- [x] Restore WORKLOG change and confirm current state.
+
+## Done
+- [x] Synced local `main` to latest `origin/main` (`25172d4`).
+- [x] Created and switched to `feature/resume-2026-02-17`.
+- [x] Restored in-progress WORKLOG update on the new branch.
+
+## Commands Run
+- `git stash push -m "temp-worklog-before-sync-feature/resume-2026-02-17" WORKLOG.md`: success.
+- `git checkout main`: success.
+- `git fetch origin`: success (`origin/main` updated to `25172d4`).
+- `git pull --ff-only origin main`: success (fast-forward from `0548c15` to `25172d4`).
+- `git checkout -b feature/resume-2026-02-17`: success.
+- `git stash pop`: success.
+- `git branch --show-current`: success (`feature/resume-2026-02-17`).
+- `git status --short --branch`: success (`WORKLOG.md` modified only).
+
+## Notes/Decisions
+- Branch name selected for immediate continuation: `feature/resume-2026-02-17`.
+
+## Next Steps
+- 1) Define the first implementation scope for this branch.
+- 2) Stage `WORKLOG.md` with upcoming scoped changes when ready to commit.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Execute next runbook work in order: (1) verify Step 3 and update runbook, then (2) implement Step 4 tick/catchup + training server minimum.
+
+## Scope
+- docs/runbook_v1.md
+- src/server.js
+- src/lib/db.js
+- src/lib/training-service.js (new)
+- WORKLOG.md
+
+## Plan
+- [x] Inspect runbook and current code status.
+- [ ] Verify Step 3 WS chat routing behavior with runtime smoke test.
+- [ ] Update runbook status to reflect verified Step 3 completion and next priority.
+- [ ] Implement Step 4 endpoints/data path (training set, tick, catchup, me-debug).
+- [ ] Run verification loop and record command results.
+
+## Done
+- [x] Confirmed runbook indicates Step 3 pending while WS chat code is already present.
+
+## Commands Run
+- `Get-Content .agents/skills/engineering-standards-skill/SKILL.md`: success.
+- `Get-Content .agents/skills/plan-first-skill/SKILL.md`: success.
+- `Get-Content .agents/skills/verification-loop-skill/SKILL.md`: success.
+- `Get-Content docs/runbook_v1.md -Encoding utf8`: success.
+- `Get-Content docs/codex_prompt_03_tick_training.md -Encoding utf8`: success.
+- `Get-Content docs/codex_prompt_04_terminal_client_tick.md -Encoding utf8`: success.
+- `Get-Content package.json -Encoding utf8`: success.
+- `Get-Content src/lib/db.js -Encoding utf8`: success.
+- `Get-Content src/server.js -Encoding utf8`: success.
+- `Get-Content src/ws/chat-server.js -Encoding utf8`: success.
+- `rg --line-number ...`: success (WS code path confirmed).
+
+## Notes/Decisions
+- Execute Step 3 verification before any new Step 4 code edits.
+
+## Next Steps
+- 1) Run WS smoke test and capture result.
+- 2) Patch runbook status.
+- 3) Implement Step 4 minimum server path.
+
+## Open Questions
+- 1) None.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Complete runbook Step 1/2 request: verify Step 3 and then implement Step 4 server minimum.
+
+## Scope
+- docs/runbook_v1.md
+- src/lib/db.js
+- src/lib/training-service.js
+- src/lib/command-service.js
+- src/server.js
+- WORKLOG.md
+
+## Plan
+- [x] Verify Step 3 WS chat routing behavior with runtime smoke test.
+- [x] Update runbook status to reflect verified Step 3 completion and next priority.
+- [x] Implement Step 4 endpoints/data path (training set, tick, catchup, me-debug).
+- [x] Run verification loop and record command results.
+
+## Done
+- [x] Verified WS routing behavior (global/sect/whisper) using 3-session runtime smoke test.
+- [x] Updated runbook: Step 3 marked complete, checklist chat item checked.
+- [x] Added DB compatibility migration for `users` training/tick columns.
+- [x] Added `training_progress` and `tick_request_log` tables.
+- [x] Added Step 4 service module and server endpoints:
+  - `POST /api/training/set`
+  - `POST /tick`
+  - `POST /tick/catchup`
+  - `GET /api/me`
+- [x] Extended status command detail to include training mode/target and `last_tick_at`.
+- [x] Verified normal tick, duplicate request-id guard, anti-cheat (<10m), and 24h catchup cap.
+
+## Commands Run
+- `node -` (WS smoke #1): failed (`FOREIGN KEY constraint failed`).
+- `node -` (inspect `sects` schema/sample): success.
+- `node -` (WS smoke #2 with valid seeded sect IDs): success.
+  - `global:A,B,C=true,true,true`
+  - `sect:A,B,C=true,true,false`
+  - `whisper:A,B,C=true,false,true`
+- `npm.cmd run db:init`: success.
+- `node --check src/server.js`: success.
+- `node --check src/lib/db.js`: success.
+- `node --check src/lib/training-service.js`: success.
+- `node --check src/lib/command-service.js`: success.
+- `node -` (Step 4 runtime smoke): success.
+  - `training_set_ok=true mode=INNER_ART`
+  - `tick1_applied=1 penalized=false duplicate=false`
+  - `tick_dup_applied=0 duplicate=true`
+  - `tick_early_applied=0 penalized=true`
+  - `catchup_tick_count=144`
+
+## Notes/Decisions
+- Step 3 implementation already existed in code; runbook only needed status synchronization.
+- For MVP stability, star growth is deterministic threshold-based (no random chance).
+- Duplicate `/tick` guard is keyed by `(user_id, client_request_id)` in `tick_request_log`.
+
+## Next Steps
+- 1) Implement Step 5 client auto-catchup/auto-tick wiring in `/terminal`.
+- 2) Add optional `/health` endpoint if Step 0 completion is desired.
+- 3) Commit scoped changes on current branch.
+
+## Open Questions
+- 1) None.
