@@ -26,6 +26,126 @@ function ensureUserColumns(db) {
   }
 }
 
+function ensureTrainingCatalogTables(db) {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS inner_arts (
+      inner_art_id TEXT PRIMARY KEY,
+      name_ko TEXT NOT NULL UNIQUE,
+      name_hanja TEXT,
+      meridian_growth_json TEXT NOT NULL,
+      combat_mod_json TEXT NOT NULL,
+      breakthrough_json TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS sect_default_inner_arts (
+      sect_id TEXT PRIMARY KEY REFERENCES sects(sect_id) ON DELETE CASCADE,
+      inner_art_id TEXT NOT NULL REFERENCES inner_arts(inner_art_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS martial_skills (
+      skill_id TEXT PRIMARY KEY,
+      name_ko TEXT NOT NULL UNIQUE,
+      description TEXT NOT NULL DEFAULT ''
+    );
+
+    CREATE TABLE IF NOT EXISTS user_inner_arts (
+      user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+      inner_art_id TEXT NOT NULL REFERENCES inner_arts(inner_art_id),
+      star INTEGER NOT NULL DEFAULT 0,
+      points INTEGER NOT NULL DEFAULT 0,
+      unlocked_at TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (user_id, inner_art_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS user_skills (
+      user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+      skill_id TEXT NOT NULL REFERENCES martial_skills(skill_id),
+      star INTEGER NOT NULL DEFAULT 0,
+      points INTEGER NOT NULL DEFAULT 0,
+      unlocked_at TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (user_id, skill_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS user_meridian_progress (
+      user_id TEXT PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
+      daemac_points REAL NOT NULL DEFAULT 0,
+      gihae_points REAL NOT NULL DEFAULT 0,
+      immac_points REAL NOT NULL DEFAULT 0,
+      dokmac_points REAL NOT NULL DEFAULT 0,
+      chungmac_points REAL NOT NULL DEFAULT 0,
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+  `);
+}
+
+function seedTrainingCatalog(db) {
+  db.prepare(`
+    INSERT OR IGNORE INTO inner_arts (
+      inner_art_id, name_ko, name_hanja, meridian_growth_json, combat_mod_json, breakthrough_json
+    ) VALUES
+      (@id, @nameKo, @nameHanja, @growth, @combat, @breakthrough)
+  `).run({
+    id: "INNER_CHEONGUN",
+    nameKo: "청운심법",
+    nameHanja: "靑雲心法",
+    growth: JSON.stringify({ DAEMAC: 1.0, GIHAE: 0.8, IMMAC: 0.3, DOKMAC: 0.0, CHUNGMAC: 0.0 }),
+    combat: JSON.stringify({ qi_regen_mult: 1.05, stability_regen_mult: 1.1, backlash_mult: 0.9, inner_injury_mult: 0.9 }),
+    breakthrough: JSON.stringify({
+      start_star: 5,
+      base_success: { 5: 0.2, 6: 0.12, 7: 0.08, 8: 0.05, 9: 0.03, 10: 0.0 },
+      fail_penalty: { stability_delta: -2 },
+    }),
+  });
+
+  db.prepare(`
+    INSERT OR IGNORE INTO inner_arts (
+      inner_art_id, name_ko, name_hanja, meridian_growth_json, combat_mod_json, breakthrough_json
+    ) VALUES
+      (@id, @nameKo, @nameHanja, @growth, @combat, @breakthrough)
+  `).run({
+    id: "INNER_HYEOLYEOM",
+    nameKo: "혈염심공",
+    nameHanja: "血炎心功",
+    growth: JSON.stringify({ DOKMAC: 1.0, CHUNGMAC: 1.0, GIHAE: 0.2, IMMAC: 0.0, DAEMAC: 0.0 }),
+    combat: JSON.stringify({ qi_regen_mult: 0.95, stability_regen_mult: 0.85, backlash_mult: 1.2, inner_injury_mult: 1.25 }),
+    breakthrough: JSON.stringify({
+      start_star: 5,
+      base_success: { 5: 0.24, 6: 0.15, 7: 0.1, 8: 0.06, 9: 0.035, 10: 0.0 },
+      fail_penalty: { stability_delta: -4 },
+    }),
+  });
+
+  db.prepare(`
+    INSERT OR IGNORE INTO inner_arts (
+      inner_art_id, name_ko, name_hanja, meridian_growth_json, combat_mod_json, breakthrough_json
+    ) VALUES
+      (@id, @nameKo, @nameHanja, @growth, @combat, @breakthrough)
+  `).run({
+    id: "INNER_MUHYEONG",
+    nameKo: "무형심법",
+    nameHanja: "無形心法",
+    growth: JSON.stringify({ IMMAC: 1.0, GIHAE: 0.8, DAEMAC: 0.3, DOKMAC: 0.0, CHUNGMAC: 0.0 }),
+    combat: JSON.stringify({ qi_regen_mult: 1.12, stability_regen_mult: 1.12, backlash_mult: 1.05, inner_injury_mult: 0.95 }),
+    breakthrough: JSON.stringify({
+      start_star: 5,
+      base_success: { 5: 0.2, 6: 0.12, 7: 0.08, 8: 0.05, 9: 0.03, 10: 0.0 },
+      fail_penalty: { stability_delta: -3 },
+    }),
+  });
+
+  db.exec(`
+    INSERT OR IGNORE INTO sect_default_inner_arts (sect_id, inner_art_id) VALUES
+      ('SECT_CHEONGUN', 'INNER_CHEONGUN'),
+      ('SECT_MYEONGYO', 'INNER_HYEOLYEOM'),
+      ('SECT_HEUKRINHOE', 'INNER_MUHYEONG');
+
+    INSERT OR IGNORE INTO martial_skills (skill_id, name_ko, description) VALUES
+      ('SKILL_CHEONGUN_BASIC_SWORD', '청운기본검', '청운문 기본 검식'),
+      ('SKILL_MYEONGYO_BASIC_BLADE', '혈염도식', '명교 기본 도식'),
+      ('SKILL_HEUKRIN_BASIC_FIST', '흑린권', '흑린회 기본 권법');
+  `);
+}
+
 function ensureAppTables(db) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -67,6 +187,8 @@ function ensureAppTables(db) {
   `);
 
   ensureUserColumns(db);
+  ensureTrainingCatalogTables(db);
+  seedTrainingCatalog(db);
 }
 
 function applySeedSql(db) {

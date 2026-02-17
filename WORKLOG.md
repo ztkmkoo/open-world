@@ -1280,3 +1280,92 @@
 ## Open Questions
 - 1) Should default inner art be auto-selected as active focus immediately after sect assignment?
 - 2) Do you want `MERIDIAN_ART` mode kept in v2, or restricted to `NONE|INNER_ART|SKILL` for now?
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Implement Step 6 training domain expansion: sect default inner art seed, training target persistence for inner art/skill, and terminal command flow (`수련 심법/무공/중지/상태`).
+
+## Scope
+- src/lib/db.js
+- src/lib/training-service.js
+- src/lib/command-service.js
+- src/server.js
+- WORKLOG.md
+
+## Plan
+- [x] Read current training/tick/command code paths.
+- [ ] Add DB schema + seed for inner arts, sect default mapping, skills, and user meridian progress.
+- [ ] Extend training service for target validation, default unlock, and training status lookup.
+- [ ] Add `/command` handling for training command grammar.
+- [ ] Update tick processing to apply inner-art meridian growth per tick.
+- [ ] Run verification loop and commit.
+
+## Notes/Decisions
+- Keep changes backward compatible with existing `/api/training/set` while adding validation and name resolution.
+- Use fixed sect default inner-art mapping from `training_spec_v2.md`.
+
+## Date/Time
+- 2026-02-17 (local)
+
+## Goal
+- Implement Step 6 training domain expansion end-to-end (schema/seed + commands + tick integration).
+
+## Scope
+- src/lib/db.js
+- src/lib/training-service.js
+- src/lib/command-service.js
+- src/routes/character-routes.js
+- src/server.js
+- docs/runbook_v1.md
+- WORKLOG.md
+
+## Plan
+- [x] Add DB schema + seed for inner arts, sect default mapping, and skills.
+- [x] Extend training service with target validation/name resolution and status payload.
+- [x] Add training command grammar handling in `/command`.
+- [x] Apply inner-art meridian growth during tick/catchup.
+- [x] Verify with db init, syntax checks, and end-to-end runtime smoke.
+- [ ] Commit scoped changes.
+
+## Done
+- [x] Added training catalog tables and seeds (`inner_arts`, `sect_default_inner_arts`, `martial_skills`, user ownership/progress tables).
+- [x] Added fixed sect default mapping for 3 sects.
+- [x] Added sect-assignment hook to unlock default inner art on first assignment.
+- [x] Added `/command` handling for:
+  - `수련 심법 <심법명>`
+  - `수련 무공 <무공명>`
+  - `수련 중지`
+  - `수련 상태`
+- [x] Extended `/api/training/set` to resolve by `target_name` or `target_id` with validation.
+- [x] Added meridian point accumulation from inner-art growth map during tick/catchup.
+- [x] Updated runbook Step 6 status to completed.
+
+## Commands Run
+- `npm.cmd run db:init`: success.
+- `node --check src/lib/db.js`: success.
+- `node --check src/lib/training-service.js`: success.
+- `node --check src/lib/command-service.js`: success.
+- `node --check src/server.js`: success.
+- `node --check src/routes/character-routes.js`: success.
+- Step 6 runtime smoke (isolated port 3103): success.
+  - `sect_select_status=302`
+  - `default_inner_unlocked=true`
+  - `cmd_status_ok=true`
+  - `cmd_set_inner_ok=true`
+  - `tick_mode=INNER_ART`
+  - `immac_after_tick=1`
+  - `cmd_set_skill_ok=true`
+  - `cmd_stop_ok=true`
+
+## Notes/Decisions
+- Port conflicts on `3000` were avoided by isolated runtime smoke on `3103`.
+- Existing `/api/training/set` contract is kept backward-compatible while adding name resolution.
+
+## Next Steps
+- 1) Commit and push Step 6 implementation branch.
+- 2) Open PR and provide migration/verification summary.
+
+## Open Questions
+- 1) None.

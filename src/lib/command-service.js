@@ -56,10 +56,14 @@ function getTerminalDetail(db, userId) {
       f.name AS faction_name,
       u.last_tick_at,
       u.training_mode,
-      u.training_target_id
+      u.training_target_id,
+      ia.name_ko AS training_inner_art_name,
+      ms.name_ko AS training_skill_name
     FROM users u
     LEFT JOIN sects s ON s.sect_id = u.sect_id
     LEFT JOIN factions f ON f.faction_id = s.faction_id
+    LEFT JOIN inner_arts ia ON ia.inner_art_id = u.training_target_id
+    LEFT JOIN martial_skills ms ON ms.skill_id = u.training_target_id
     WHERE u.user_id = ?
   `).get(userId);
 }
@@ -93,6 +97,7 @@ function buildHelpLinesFor(target) {
     "도움(help): 지원 명령 목록 표시",
     "상태(status): 캐릭터와 소속 상태 표시",
     "문파(sect): 문파 상세 정보 표시",
+    "수련 <심법|무공|중지|상태>: 수련 대상 제어",
     "예시: /상태, 도움 문파",
   ];
 }
@@ -101,6 +106,10 @@ function buildCommandResponse(parsed, detail, deptNames) {
   const command = parsed.canonical;
 
   if (command === "status") {
+    const trainingTargetName = detail.training_mode === "INNER_ART"
+      ? (detail.training_inner_art_name || detail.training_target_id || "-")
+      : (detail.training_skill_name || detail.training_target_id || "-");
+
     return {
       ok: true,
       header: "【상태】 캐릭터 현황",
@@ -108,7 +117,7 @@ function buildCommandResponse(parsed, detail, deptNames) {
         `이름: ${detail.nickname_unique}`,
         `성별: ${detail.gender}`,
         `소속: ${detail.faction_name} / ${detail.sect_name}`,
-        `수련: ${detail.training_mode || "NONE"} (${detail.training_target_id || "-"})`,
+        `수련: ${detail.training_mode || "NONE"} (${trainingTargetName})`,
         `last_tick_at: ${detail.last_tick_at || "-"}`,
         `시간: ${formatKstNow()}`,
       ],
@@ -149,7 +158,7 @@ function buildCommandResponse(parsed, detail, deptNames) {
     header: "【오류】 알 수 없는 명령",
     lines: [
       `입력: ${parsed.token || "(빈 입력)"}`,
-      "지원 명령: 도움, 상태, 문파",
+      "지원 명령: 도움, 상태, 문파, 수련",
       "예시: /도움 또는 상태",
     ],
     actions: ["도움", "상태", "문파"],

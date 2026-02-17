@@ -5,6 +5,7 @@ function registerCharacterRoutes(app, deps) {
     requireRegistered,
     loadUser,
     assignSectTx,
+    onSectAssigned,
     redirectWithAlert,
   } = deps;
 
@@ -104,6 +105,10 @@ function registerCharacterRoutes(app, deps) {
       }
       res.status(400).send(redirectWithAlert("선택 처리에 실패했습니다.", "/choose-faction"));
       return;
+    }
+
+    if (typeof onSectAssigned === "function") {
+      onSectAssigned(session.user_id, sectId);
     }
 
     res.redirect("/terminal");

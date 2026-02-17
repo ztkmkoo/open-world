@@ -121,6 +121,89 @@ function loadUser(userId) {
   return db.prepare(`SELECT user_id, surname, given_name, nickname_unique, gender, sect_id FROM users WHERE user_id = ?`).get(userId);
 }
 
+function buildTrainingCommandResponse(result, successHeader) {
+  if (!result.ok) {
+    return {
+      ok: false,
+      header: "【오류】 수련 명령 실패",
+      lines: [`코드: ${result.code || "UNKNOWN"}`],
+      actions: ["수련 상태", "수련 중지", "도움"],
+    };
+  }
+
+  const profile = result.profile;
+  return {
+    ok: true,
+    header: successHeader,
+    lines: [
+      `모드: ${profile.training_mode}`,
+      `대상: ${profile.training_target_name || profile.training_target_id || "-"}`,
+      `last_tick_at: ${profile.last_tick_at || "-"}`,
+    ],
+    actions: ["수련 상태", "상태", "도움"],
+  };
+}
+
+function handleTrainingCommand(rawInput, userId, trainingApi) {
+  const normalized = String(rawInput || "").trim().replace(/^\/+/, "");
+  const parts = normalized ? normalized.split(/\s+/) : [];
+  if (parts[0] !== "수련") return null;
+
+  const sub = parts[1] || "";
+  const targetName = parts.slice(2).join(" ").trim();
+
+  if (sub === "심법") {
+    if (!targetName) {
+      return {
+        ok: false,
+        header: "【오류】 수련 명령 실패",
+        lines: ["형식: 수련 심법 <심법명>"],
+        actions: ["수련 상태", "도움"],
+      };
+    }
+    return buildTrainingCommandResponse(
+      trainingApi.setTraining(userId, "INNER_ART", targetName),
+      "【수련】 심법 변경 완료"
+    );
+  }
+
+  if (sub === "무공") {
+    if (!targetName) {
+      return {
+        ok: false,
+        header: "【오류】 수련 명령 실패",
+        lines: ["형식: 수련 무공 <무공명>"],
+        actions: ["수련 상태", "도움"],
+      };
+    }
+    return buildTrainingCommandResponse(
+      trainingApi.setTraining(userId, "SKILL", targetName),
+      "【수련】 무공 변경 완료"
+    );
+  }
+
+  if (sub === "중지") {
+    return buildTrainingCommandResponse(
+      trainingApi.setTraining(userId, "NONE", null),
+      "【수련】 수련 중지 완료"
+    );
+  }
+
+  if (sub === "상태") {
+    const status = trainingApi.getTrainingStatus(userId);
+    return buildTrainingCommandResponse(status, "【수련】 현재 상태");
+  }
+
+  return {
+    ok: false,
+    header: "【오류】 수련 명령 실패",
+    lines: [
+      "지원 형식: 수련 심법 <심법명> | 수련 무공 <무공명> | 수련 중지 | 수련 상태",
+    ],
+    actions: ["수련 상태", "도움"],
+  };
+}
+
 const assignSectTx = db.transaction((userId, sectId) => {
   const user = loadUser(userId);
   if (!user) return { ok: false, code: "NO_USER" };
@@ -169,6 +252,12 @@ registerCharacterRoutes(app, {
   requireRegistered,
   loadUser,
   assignSectTx,
+  onSectAssigned: (userId, sectId) => {
+    const result = trainingService.ensureSectDefaultUnlocked(userId, sectId, { autoSelect: false });
+    if (!result.ok) {
+      console.warn(`[TRAINING] failed to unlock default inner art user=${userId} sect=${sectId} code=${result.code}`);
+    }
+  },
   redirectWithAlert,
 });
 
@@ -211,6 +300,12 @@ app.post("/command", (req, res) => {
   const deptNames = getSectDepartmentNames(db, detail.sect_id, 3);
 
   const rawInput = String(req.body.input || "");
+  const trainingResponse = handleTrainingCommand(rawInput, user.user_id, trainingService);
+  if (trainingResponse) {
+    res.json(trainingResponse);
+    return;
+  }
+
   const parsed = parseCommandInput(rawInput);
   const response = buildCommandResponse(parsed, detail, deptNames);
 
@@ -227,10 +322,11 @@ app.post("/api/training/set", (req, res) => {
   if (!session) return;
 
   const mode = String(req.body.mode || "NONE").trim().toUpperCase();
-  const rawTarget = String(req.body.target_id || "").trim();
-  const targetId = rawTarget ? rawTarget.slice(0, 64) : null;
+  const rawTargetId = String(req.body.target_id || "").trim();
+  const rawTargetName = String(req.body.target_name || "").trim();
+  const target = rawTargetName || rawTargetId || null;
 
-  const result = trainingService.setTraining(session.user_id, mode, targetId);
+  const result = trainingService.setTraining(session.user_id, mode, target);
   if (!result.ok) {
     res.status(400).json({ ok: false, code: result.code });
     return;
@@ -240,7 +336,9 @@ app.post("/api/training/set", (req, res) => {
     ok: true,
     training_mode: result.profile.training_mode,
     training_target_id: result.profile.training_target_id,
+    training_target_name: result.profile.training_target_name,
     stars: result.profile.stars,
+    meridians: result.profile.meridians,
   });
 });
 
